@@ -1,6 +1,14 @@
 
 local IMAGE_BASE = 'nui://qbinventory/images/'
 local appId = 'qb-fishing:catalog'
+local inited = false
+
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    if QB.nui.isAppOpen(appId) then
+        QB.nui.closeApp(appId)
+    end
+end)
+
 
 local ITEMS = {
     bass                = { label = 'Bass',                image = 'bass.png',                description = 'A feisty freshwater bass, hooked fresh from the water.' },
@@ -58,6 +66,9 @@ local function itemLabel(name)
 end
 
 local function currentFishingLevel()
+    if not inited then
+        return 1
+    end
     return (exports.qbskills:getRep('fishing') or {}).level or 1
 end
 
@@ -161,7 +172,9 @@ QB.nui.registerApp({
 })
 
 local function openFishingCatalog()
+    if not playerLoaded then return end
     if QB.nui.isAppOpen(appId) then return end
+
     QB.nui.updateApp(appId, { navigation = buildNavigation() })
     QB.nui.openApp(appId)
 end
@@ -169,3 +182,4 @@ end
 RegisterCommand('fishcatalog', function()
     openFishingCatalog()
 end, false)
+inited = true
