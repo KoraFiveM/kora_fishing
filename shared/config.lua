@@ -90,6 +90,30 @@ local dockPoles = {
     magnet_pole = Config.poles.magnet_pole,
 }
 
+Config.Locations = {
+    buyer = {
+        {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01'}
+    },
+}
+
+Config.Shop = {
+    locations = {
+        {coords = vector3(1312.02, 4281.76, 32.91), model = 'a_m_m_farmer_01'}
+    },
+    items = {
+       {name = 'fishing_pole',      amount = 40, price = 100, level = 1},
+       {name = 'magnet_pole',       amount = 20, price = 150, level = 15},
+       {name = 'worm',              amount = 50, price = 10, level = 1},
+       {name = 'plug_bait',         amount = 50, price = 25, level = 15},
+       {name = 'soft_plastic_bait', amount = 50, price = 45, level = 30},
+       {name = 'spinner_bait',      amount = 50, price = 55, level = 45},
+       {name = 'magnet_2lb',        amount = 10, price = 15, level = 15},
+       {name = 'magnet_5lb',        amount = 10, price = 40, level = 30},
+       {name = 'magnet_10lb',       amount = 10, price = 60, level = 45},
+       {name = 'magnet_20lb',       amount = 10, price = 80, level = 60},
+    }
+}
+
 Config.zones = {
     {
         zone = 'poly',
