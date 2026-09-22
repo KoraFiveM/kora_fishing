@@ -1,54 +1,96 @@
 local function hasItem(item)
-   return exports['qb-inventory']:HasItem(item)
+    return exports['qb-inventory']:HasItem(item)
 end
 
 if Config.Locations and Config.Locations.buyer then
     local buyer = Config.Locations.buyer
+
     if #buyer.items > 0 and #buyer.locations > 0 then
-        for key, buyer in pairs(buyer.locations) do
-            local ped = QB.entities.create(buyer.model, buyer.coords, {freeze = true, invincible = true})
+        local appId = 'qbfishing:buyer'
+        local sellAction = 'qbfishing:sell'
+        local currentBuyerKey = nil
+
+        local function buildBuyerItems()
+            local items = {}
+            for itemKey, item in ipairs(buyer.items) do
+                if hasItem(item.item) then
+                    items[#items + 1] = {
+                        id = 'buyer:' .. itemKey,
+                        label = item.label,
+                        description = 'Sell Price: ' .. item.price,
+                        image = item.image,
+                        action = {
+                            id = sellAction,
+                            label = 'Sell',
+                            fields = {
+                                { id = 'amount', label = 'Amount', type = 'number', min = 1, required = true },
+                            },
+                        },
+                    }
+                end
+            end
+            return items
+        end
+
+        local function buildNavigation()
+            return { {
+                id = 'sell',
+                label = 'Sell Catch',
+                icon = 'Fish',
+                content = {
+                    title = 'Sell your catch',
+                    blocks = { { type = 'list', id = 'items', items = buildBuyerItems() } },
+                },
+            } }
+        end
+
+        QB.nui.registerApp({
+            id = appId,
+            title = 'Fish Buyer',
+            description = 'Sell fish and other catches for cash.',
+            icon = 'Fish',
+            layout = 'compact',
+            width = 500,
+            height = 560,
+            placement = 'right',
+            footer = 'Press Escape to close',
+            navigation = buildNavigation(),
+            onAction = function(actionId, context)
+                if actionId ~= sellAction then return end
+
+                local itemKey = tonumber((context.itemId or ''):match('^buyer:(%d+)$'))
+                local amount = context.value and tonumber(context.value.amount)
+
+                if not itemKey or not amount or amount <= 0 then
+                    return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
+                end
+
+                TriggerServerEvent('qbfishing:server:sellItem', currentBuyerKey, itemKey, amount)
+            end,
+        })
+
+        local function openBuyerMenu(key)
+            local can = QB.callback.trigger('qbfishing:server:canOpenBuyerMenu', key)
+            if not can then return end
+
+            local items = buildBuyerItems()
+            if #items == 0 then
+                QB.notify.send({ title = "qb-fishing", message = "You do not have any items to sell.", type = "error" })
+                return
+            end
+
+            currentBuyerKey = key
+            QB.nui.updateApp(appId, { navigation = buildNavigation() })
+            QB.nui.openApp(appId)
+        end
+
+        for key, location in pairs(buyer.locations) do
+            local ped = QB.entities.create(location.model, location.coords, { freeze = true, invincible = true })
             exports.qbtarget:addEntity(ped, {
                 {
                     icon = 'fas fa-fish',
                     label = 'Open Buyer Menu',
-                    onSelect = function()
-                        local can = QB.callback.trigger('qbfishing:server:canOpenBuyerMenu', key)
-                        if not can then return end
-                        local hasItems = {}
-                        for itemKey, item in ipairs(Config.Locations.buyer.items) do
-                            if not hasItem(item.item) then
-                                goto continue
-                            end
-                            hasItems[#hasItems + 1] = {
-                                header = item.label,
-                                icon = item.image,
-                                txt = 'Sell Price: ' .. item.price,
-                                action = function()
-                                    local input = exports['qb-input']:ShowInput({
-                                        header = 'Sell ' .. item.item,
-                                        submitText = 'Sell',
-                                        inputs = {
-                                            {
-                                                type = 'number',
-                                                isRequired = true,
-                                                name = 'amount',
-                                                text = 'Amount'
-                                            }
-                                        }
-                                    })
-                                    if input and input.amount then
-                                        TriggerServerEvent('qbfishing:server:sellItem', key, itemKey, tonumber(input.amount))
-                                    end
-                                end
-                            }
-                            ::continue::
-                        end
-                        if #hasItems == 0 then
-                            QB.notify.send({title="qb-fishing", message = "You do not have any items to sell.", type = "error"})
-                            return
-                        end
-                        exports['qb-menu']:openMenu(hasItems)
-                    end
+                    onSelect = function() openBuyerMenu(key) end,
                 }
             })
         end
