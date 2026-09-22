@@ -90,6 +90,15 @@ local dockPoles = {
     magnet_pole = Config.poles.magnet_pole,
 }
 
+local function blipData(label, sprite, color, scale, shortrange)
+    return {
+        label = label,
+        sprite = sprite,
+        color = color,
+        scale = scale,
+        shortRange = shortrange,
+    }
+end
 Config.Locations = {
     buyer = {
         items = {
@@ -106,7 +115,7 @@ Config.Locations = {
             {item = 'bass', price = 60},
         },
         locations = {
-            {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01'}
+            {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01', blip = blipData('Fish Buyer', 500, 3, 0.8, true)}
         }
     },
     breakdown = {
@@ -129,7 +138,7 @@ Config.Locations = {
             {item = 'closed_safe', rank = 4},
         },
         locations = {
-            {coords = vector3(1110.13, -2007.89, 31.05)}
+            {coords = vector3(1110.13, -2007.89, 31.05), blip = blipData('Breakdown Location', 867, 3, 0.8, true)}
         },
         receiveItems = {'rubber', 'metalscrap', 'plastic', 'iron', 'copper', 'glass', 'steel'},
         receiveAmounts = {min = 4, max = 10}
@@ -137,8 +146,17 @@ Config.Locations = {
 }
 
 Config.Shop = {
+    blipData = {
+        title = 'Fishing Shop',
+        color = 3,
+        sprite = 374,
+        scale = 0.8,
+        display = 4,
+        shortRange = true,
+        category = 'Fishing',
+    },
     locations = {
-        {coords = vector3(1312.02, 4281.76, 32.91), model = 'a_m_m_farmer_01'}
+        {coords = vector3(1312.02, 4281.76, 32.91), model = 'a_m_m_farmer_01', blip = true}
     },
     items = {
        {name = 'fishing_pole',      amount = 40, price = 100, level = 1},
@@ -153,13 +171,25 @@ Config.Shop = {
        {name = 'magnet_20lb',       amount = 10, price = 80, level = 60},
     }
 }
-
+local function zoneBlips(label)
+    return {
+        blipData = {
+            title = label,
+            color = 3,
+            sprite = 356,
+            scale = 0.8,
+            display = 4,
+            shortRange = true,
+            category = 'Fishing',
+        }
+    }
+end
 Config.zones = {
     {
         zone = 'poly',
         thickness = 5.5,
-        label = 'Sandy Bay Dock',
         poles = dockPoles,
+        blip = zoneBlips('Sandy Bay Dock'),
         points = {
             vector3(1308.29, 4281.04, 31.91),
             vector3(1295.78, 4215.35, 31.91),
@@ -178,8 +208,8 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 5.5,
-        label = 'Pier Upper Left Dock',
         poles = dockPoles,
+        blip = zoneBlips('Pier Upper Left Dock'),
         points = {
             vector3(-1662.44, -1155.45, 11.52),
             vector3(-1661.16, -1156.08, 11.59),
@@ -206,8 +236,8 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 5.5,
-        label = 'Pier Upper Right Dock',
         poles = dockPoles,
+        blip = zoneBlips('Pier Upper Right Dock'),
         points = {
             vector3(-1737.01, -1096.46, 11.13),
             vector3(-1805.77, -1178.40, 11.09),
@@ -230,7 +260,7 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 5.5,
-        label = 'Pier Lower Dock',
+        blip = zoneBlips('Pier Lower Dock'),
         poles = dockPoles,
         points = {
             vector3(-1860.42, -1230.68, 7.26),
@@ -252,7 +282,7 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 3.5,
-        label = 'Left Side Dock',
+        blip = zoneBlips('Left Side Dock'),
         poles = dockPoles,
         points = {
             vector3(-1662.44, -1155.45, 11.52),
@@ -280,7 +310,7 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 4.0,
-        label = 'Right Side Dock',
+        blip = zoneBlips('Right Side Dock'),
         poles = dockPoles,
         points = {
             vector3(-1602.52, 5189.63, 3.41),
@@ -316,7 +346,7 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 4.0,
-        label = 'New Area',
+        blip = zoneBlips('New Area'),
         poles = dockPoles,
         points = {
             vector3(-286.87, 6627.67, 6.08),
