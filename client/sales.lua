@@ -43,6 +43,10 @@ if Config.Locations and Config.Locations.buyer then
                             }
                             ::continue::
                         end
+                        if #hasItems == 0 then
+                            QB.notify.send({title="qb-fishing", message = "You do not have any items to sell.", type = "error"})
+                            return
+                        end
                         exports['qb-menu']:openMenu(hasItems)
                     end
                 }

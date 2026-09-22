@@ -44,6 +44,10 @@ if Config.Locations and Config.Locations.breakdown then
                                 }
                                 ::continue::
                             end
+                            if #hasItems == 0 then
+                                QB.notify.send({title="qb-fishing", message = "You do not have any items to refine.", type = "error"})
+                                return
+                            end
                             exports['qb-menu']:openMenu(hasItems)
                         end
                     }

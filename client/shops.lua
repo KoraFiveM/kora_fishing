@@ -11,7 +11,6 @@ for key, shopData in ipairs(Config.Shop.locations) do
                     local items = {}
                     local level = exports.qbskills:getRep(source, 'fishing').level or 1
                     for itemKey, item in ipairs(Config.Shop.items) do
-                        QB.print.debug(item)
                         if not item.level or level >= item.level then
                             items[#items + 1] = {
                                 header = item.label,
