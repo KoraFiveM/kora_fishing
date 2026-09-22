@@ -92,8 +92,48 @@ local dockPoles = {
 
 Config.Locations = {
     buyer = {
-        {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01'}
+        items = {
+            {item = 'flounder', price = 15},
+            {item = 'reddrum', price = 15},
+            {item = 'tuna', price = 15},
+            {item = 'steelhead', price = 30},
+            {item = 'blue_fish', price = 30},
+            {item = 'halibut', price = 30},
+            {item = 'catfish', price = 50},
+            {item = 'white_bass', price = 50},
+            {item = 'salmon', price = 50},
+            {item = 'trout', price = 60},
+            {item = 'bass', price = 60},
+        },
+        locations = {
+            {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01'}
+        }
     },
+    breakdown = {
+        items = {
+            {item = 'rusty_usb', rank = 1},
+            {item = 'rusty_motherboard', rank = 1},
+            {item = 'rusty_scanner', rank = 1},
+            {item = 'rusty_antenna', rank = 1},
+            {item = 'copper_pipe', rank = 1},
+            {item = 'rusty_scrap_metal', rank = 1},
+            {item = 'rusty_pistol', rank = 1},
+            {item = 'rusty_sign', rank = 2},
+            {item = 'rusty_chain', rank = 2},
+            {item = 'rusty_tire', rank = 2},
+            {item = 'rusty_box', rank = 2},
+            {item = 'rusty_shotgun', rank = 3},
+            {item = 'rusty_ak', rank = 3},
+            {item = 'rusty_bike', rank = 3},
+            {item = 'rusty_wheelchair', rank = 3},
+            {item = 'closed_safe', rank = 4},
+        },
+        locations = {
+            {coords = vector3(1110.13, -2007.89, 31.05)}
+        },
+        receiveItems = {'rubber', 'metalscrap', 'plastic', 'iron', 'copper', 'glass', 'steel'},
+        receiveAmounts = {min = 4, max = 10}
+    }
 }
 
 Config.Shop = {
@@ -288,3 +328,30 @@ Config.zones = {
         },
     },
 }
+
+local Items = exports['qb-core']:GetShared('Items')
+
+if Config.Locations and Config.Locations.buyer and Config.Locations.buyer.items then
+    for k, v in pairs(Config.Locations.buyer.items) do
+        if Items[v.item] then
+            Config.Locations.buyer.items[k].label = Items[v.item].label
+            Config.Locations.buyer.items[k].image  = 'nui://qbinventory/images/' .. Items[v.item].image
+        end
+    end
+end
+if Config.Locations and Config.Locations.breakdown and Config.Locations.breakdown.items then
+    for k, v in pairs(Config.Locations.breakdown.items) do
+        if Items[v.item] then
+            Config.Locations.breakdown.items[k].label = Items[v.item].label
+            Config.Locations.breakdown.items[k].image  = 'nui://qbinventory/images/' .. Items[v.item].image
+        end
+    end
+end
+if Config.Shop and Config.Shop.items then
+    for k, v in pairs(Config.Shop.items) do
+        if Items[v.name] then
+            Config.Shop.items[k].label = Items[v.name].label
+            Config.Shop.items[k].image  = 'nui://qbinventory/images/' .. Items[v.name].image
+        end
+    end
+end
