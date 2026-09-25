@@ -34,7 +34,7 @@ if Config.Shop and Config.Shop.locations and Config.Shop.items then
             content = {
                 title = 'Fishing Shop',
                 blocks = {
-                    { type = 'list', id = 'items', empty = 'Nothing available at your current level.', items = buildShopItems() },
+                    { type = 'list', id = 'items', label = 'Available Items', empty = 'Nothing available at your current level.', items = buildShopItems() },
                 },
             },
         } }
