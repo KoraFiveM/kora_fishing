@@ -172,7 +172,6 @@ QB.nui.registerApp({
 })
 
 local function openFishingCatalog()
-    if not playerLoaded then return end
     if QB.nui.isAppOpen(appId) then return end
 
     QB.nui.updateApp(appId, { navigation = buildNavigation() })
