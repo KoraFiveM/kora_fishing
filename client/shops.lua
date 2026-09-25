@@ -2,7 +2,7 @@ if Config.Shop and Config.Shop.locations and Config.Shop.items then
     local appId = 'qbfishing:shop'
     local purchaseAction = 'qbfishing:purchase'
     local currentShopKey = nil
-
+    
     local function buildShopItems()
         local level = (exports.qbskills:getRep('fishing') or {}).level or 1
         local items = {}
