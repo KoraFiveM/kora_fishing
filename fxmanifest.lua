@@ -9,6 +9,7 @@ dependency {
 	'qbskills'
 }
 client_scripts {
+	'client/functions.lua',
 	'client/**.lua',
 }
 

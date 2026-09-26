@@ -13,11 +13,12 @@ if Config.Locations and Config.Locations.breakdown then
             local items = {}
             for itemKey, item in ipairs(breakdown.items) do
                 if hasItem(item.item) then
+                    local itemData = itemData(item.item)
                     items[#items + 1] = {
                         id = 'refine:' .. itemKey,
-                        label = item.label,
-                        description = 'Refine: ' .. item.label,
-                        image = item.image,
+                        label = itemData and itemData.label or item.label,
+                        description = 'Refine: ' .. (itemData and itemData.label or item.label),
+                        image = itemData and itemData.image or item.image,
                         action = { id = refineAction, label = 'Refine' },
                     }
                 end

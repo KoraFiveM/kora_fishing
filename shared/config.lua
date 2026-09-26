@@ -115,7 +115,7 @@ Config.Locations = {
             {item = 'bass', price = 60},
         },
         locations = {
-            {coords = vector3(1308.29, 4281.04, 31.91), model = 'a_m_m_farmer_01', blip = blipData('Fish Buyer', 500, 3, 0.8, true)}
+            {coords = vector4(-1847.20, -1190.31, 13.32, 155.0), model = 'a_m_m_farmer_01', blip = blipData('Fish Buyer', 500, 3, 0.8, true)}
         }
     },
     breakdown = {
@@ -156,7 +156,7 @@ Config.Shop = {
         category = 'Fishing',
     },
     locations = {
-        {coords = vector3(1312.02, 4281.76, 32.91), model = 'a_m_m_farmer_01', blip = true}
+        {coords = vector4(-1600.84, 5204.13, 3.31, 20.0), model = 'a_m_m_farmer_01', blip = true}
     },
     items = {
        {name = 'fishing_pole',      amount = 40, price = 100, level = 1},
@@ -209,7 +209,6 @@ Config.zones = {
         zone = 'poly',
         thickness = 5.5,
         poles = dockPoles,
-        blip = zoneBlips('Pier Upper Left Dock'),
         points = {
             vector3(-1662.44, -1155.45, 11.52),
             vector3(-1661.16, -1156.08, 11.59),
@@ -237,7 +236,6 @@ Config.zones = {
         zone = 'poly',
         thickness = 5.5,
         poles = dockPoles,
-        blip = zoneBlips('Pier Upper Right Dock'),
         points = {
             vector3(-1737.01, -1096.46, 11.13),
             vector3(-1805.77, -1178.40, 11.09),
@@ -282,7 +280,6 @@ Config.zones = {
     {
         zone = 'poly',
         thickness = 3.5,
-        blip = zoneBlips('Left Side Dock'),
         poles = dockPoles,
         points = {
             vector3(-1662.44, -1155.45, 11.52),
@@ -306,7 +303,47 @@ Config.zones = {
             vector3(-1676.30, -1170.32, 11.52),
         },
     },
-
+    {
+        zone = 'poly',
+        thickness = 4.0,
+        blip = zoneBlips('Highway Dock'),
+        poles = dockPoles,
+        points = {
+            vector3(-3351.5510, 963.5696, 7.4297),
+            vector3(-3408.0774, 963.5692, 7.5094),
+            vector3(-3408.3340, 951.5104, 7.4082),
+            vector3(-3428.6963, 951.2784, 7.2065),
+            vector3(-3428.8657, 978.8679, 7.2160),
+            vector3(-3428.7227, 983.8123, 7.3858),
+            vector3(-3420.3435, 983.8123, 7.5764),
+            vector3(-3416.8298, 983.8123, 7.5478),
+            vector3(-3412.5522, 983.8123, 7.4895),
+            vector3(-3408.4307, 983.8123, 7.5374),
+            vector3(-3408.3335, 971.5737, 7.4041),
+            vector3(-3345.8154, 971.4990, 7.3240),
+            vector3(-3346.1653, 969.3766, 7.2965),
+            vector3(-3360.5078, 969.6113, 7.2965),
+            vector3(-3376.3914, 969.6355, 7.2965),
+            vector3(-3398.2307, 969.6752, 7.4983),
+            vector3(-3406.7749, 969.8685, 7.4911),
+            vector3(-3409.4902, 969.7586, 7.3517),
+            vector3(-3409.5403, 981.5486, 7.3517),
+            vector3(-3412.7427, 981.5636, 7.4802),
+            vector3(-3427.3916, 980.7371, 7.3517),
+            vector3(-3427.3555, 977.6072, 7.3517),
+            vector3(-3427.0715, 971.3098, 7.3517),
+            vector3(-3426.8979, 966.7854, 7.3517),
+            vector3(-3427.0564, 963.9075, 7.3517),
+            vector3(-3427.0122, 953.6696, 7.3517),
+            vector3(-3409.8965, 953.3080, 7.3517),
+            vector3(-3409.7300, 964.0236, 7.3517),
+            vector3(-3409.5669, 965.1011, 7.3517),
+            vector3(-3401.3171, 965.4185, 7.2965),
+            vector3(-3382.5383, 965.4432, 7.7061),
+            vector3(-3363.7981, 965.4250, 7.7147),
+            vector3(-3345.0012, 965.5070, 7.6679),
+        },
+    },
     {
         zone = 'poly',
         thickness = 4.0,
@@ -358,30 +395,3 @@ Config.zones = {
         },
     },
 }
-
-local Items = exports['qb-core']:GetShared('Items')
-
-if Config.Locations and Config.Locations.buyer and Config.Locations.buyer.items then
-    for k, v in pairs(Config.Locations.buyer.items) do
-        if Items[v.item] then
-            Config.Locations.buyer.items[k].label = Items[v.item].label
-            Config.Locations.buyer.items[k].image  = 'nui://qbinventory/images/' .. Items[v.item].image
-        end
-    end
-end
-if Config.Locations and Config.Locations.breakdown and Config.Locations.breakdown.items then
-    for k, v in pairs(Config.Locations.breakdown.items) do
-        if Items[v.item] then
-            Config.Locations.breakdown.items[k].label = Items[v.item].label
-            Config.Locations.breakdown.items[k].image  = 'nui://qbinventory/images/' .. Items[v.item].image
-        end
-    end
-end
-if Config.Shop and Config.Shop.items then
-    for k, v in pairs(Config.Shop.items) do
-        if Items[v.name] then
-            Config.Shop.items[k].label = Items[v.name].label
-            Config.Shop.items[k].image  = 'nui://qbinventory/images/' .. Items[v.name].image
-        end
-    end
-end

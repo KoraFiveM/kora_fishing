@@ -175,7 +175,9 @@ for key, zoneData in ipairs(Config.zones) do
             currentZone = key
         end,
         onExit = function()
-            QB.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
+            if hasFishingPole(zoneData) then
+                QB.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
+            end
             currentZone = nil
             isFishing = false
             currentRod = nil

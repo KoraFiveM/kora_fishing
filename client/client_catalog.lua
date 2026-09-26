@@ -27,17 +27,17 @@ local function sortedBaitNames(poleData)
     return names
 end
 
-local Items = exports['qb-core']:GetShared('Items')
 
 local function buildFishItems(catchList, unlocked)
     local fishItems = {}
     for i = 1, #catchList do
         local fishName = catchList[i]
+        local fishData = itemData(fishName)
         fishItems[#fishItems + 1] = {
             id = 'fish:' .. fishName,
-            label = Items[fishName] and Items[fishName].label or fishName,
-            description = Items[fishName] and Items[fishName].description or nil,
-            image = Items[fishName] and (IMAGE_BASE .. Items[fishName].image) or nil,
+            label = fishData and fishData.label or fishName,
+            description = fishData and fishData.description or nil,
+            image = fishData and fishData.image or nil,
             tone = unlocked and 'success' or 'neutral',
         }
     end
@@ -52,14 +52,14 @@ local function buildBaitItems(poleName, poleData, level)
         local baitData = poleData.baits[baitName]
         local requiredLevel = baitData.level or 0
         local unlocked = level >= requiredLevel
-
+        local baitItemData = itemData(baitName)
         baitItems[#baitItems + 1] = {
             id = poleName .. ':' .. baitName,
-            label = Items[baitName] and Items[baitName].label or baitName,
+            label = baitItemData and baitItemData.label or baitName,
             description = unlocked
                 and (('Unlocked at level %d'):format(requiredLevel))
                 or (('Locked - requires level %d'):format(requiredLevel)),
-            image = Items[baitName] and (IMAGE_BASE .. Items[baitName].image) or nil,
+            image = baitItemData and baitItemData.image or nil,
             tone = unlocked and 'success' or 'destructive',
             children = buildFishItems(baitData.catch, unlocked),
         }
@@ -68,13 +68,14 @@ local function buildBaitItems(poleName, poleData, level)
 end
 
 local function buildPoleView(poleName, poleData, level)
+    local poleItemData = itemData(poleName)
     return {
         id = poleName,
-        label = Items[poleName] and Items[poleName].label or poleName,
-        icon = Items[poleName] and (IMAGE_BASE .. Items[poleName].image) or nil,
+        label = poleItemData and poleItemData.label or poleName,
+        icon = poleItemData and poleItemData.image or nil,
         content = {
-            title = Items[poleName] and Items[poleName].label or poleName,
-            description = Items[poleName] and Items[poleName].description or nil,
+            title = poleItemData and poleItemData.label or poleName,
+            description = poleItemData and poleItemData.description or nil,
             blocks = {
                 {
                     type = 'stats',
