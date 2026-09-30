@@ -19,57 +19,6 @@ local function hasFishingPole(zoneData)
     return false
 end
 
-local function timeByLevel(bait)
-    if not currentRod or not bait then return nil end
-
-    local rod = Config.poles[currentRod]
-    local baitData = rod and rod.baits[bait]
-    if not baitData then return nil end
-
-    local requiredLevel = baitData.level or 1
-    local baseTime = baitData.baseTime or 12000
-    local currentLevel = (exports.qbskills:getRep('fishing') or {}).level or 1
-
-    if currentLevel < requiredLevel then
-        return nil
-    end
-
-    local maxLevel = Config.fishing.maxLevel
-    local minTime = Config.fishing.minTime
-
-    if currentLevel >= maxLevel then
-        return minTime
-    end
-
-    local progress = (currentLevel - requiredLevel) / (maxLevel - requiredLevel)
-    local time = baseTime - ((baseTime - minTime) * progress)
-
-    return math.floor(math.max(minTime, time))
-end
-
-local function getBait()
-    local zone = Config.zones[currentZone]
-    if not zone or not currentRod then return nil end
-
-    local poleZoneData = zone.poles[currentRod]
-    if not poleZoneData then return nil end
-
-    local currentLevel = (exports.qbskills:getRep('fishing') or {}).level or 1
-
-    local bestBait, bestLevel = nil, math.huge
-    for bait, baitData in pairs(poleZoneData.baits) do
-        local requiredLevel = baitData.level or 1
-        if requiredLevel < bestLevel
-            and exports['qb-inventory']:HasItem(bait)
-            and currentLevel >= requiredLevel
-        then
-            bestBait, bestLevel = bait, requiredLevel
-        end
-    end
-
-    return bestBait
-end
-
 local inAnim = false
 local function fishingAnim()
     if inAnim then return end
@@ -85,33 +34,32 @@ end
 
 local function fish()
     while isFishing and currentZone and currentRod do
-        local bait = getBait()
-        if not bait then
-            QB.notify.send({ title = 'qb-fishing', message = 'You have no usable bait for this pole', type = 'error' })
+        local begun, reason = QB.callback.trigger('qbfishing:server:beginCatch')
+        if type(begun) ~= 'table' then
+            QB.notify.send({ title = 'qb-fishing', message = reason or 'Unable to start a catch.', type = 'error' })
             break
         end
 
-        local waitTime = timeByLevel(bait)
-        if not waitTime then
-            QB.notify.send({ title = 'qb-fishing', message = 'You do not meet the level requirement for this bait', type = 'error' })
-            break
-        end
-
+        local waitTime = begun.duration
         fishingAnim()
-
         while waitTime > 0 and isFishing and currentZone and currentRod do
             Wait(1000)
             waitTime = waitTime - 1000
         end
 
         if isFishing and currentZone and currentRod then
-            local minigame = QB.minigames.play('fishing')
-            if minigame.success then
-                TriggerServerEvent('qbfishing:server:catchFish', currentZone)
+            local played, result = pcall(QB.minigames.play, 'fishing', nil, begun.authorization)
+            local proof = played and type(result) == 'table' and result.success and result.proof or nil
+            TriggerServerEvent('qbfishing:server:catchFish', currentZone, proof, begun.authorization)
+            if not played then
+                print(('qbfishing: fishing minigame failed: %s'):format(result))
+                QB.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
+                break
             end
         end
     end
 
+    if isFishing then TriggerServerEvent('qbfishing:server:stopFishing') end
     isFishing = false
     currentRod = nil
     stopFishingAnim()
@@ -178,6 +126,7 @@ for key, zoneData in ipairs(Config.zones) do
             if hasFishingPole(zoneData) then
                 QB.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
             end
+            if isFishing then TriggerServerEvent('qbfishing:server:stopFishing') end
             currentZone = nil
             isFishing = false
             currentRod = nil

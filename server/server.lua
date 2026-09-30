@@ -115,26 +115,75 @@ local function getBait(src)
             bestBait, bestLevel = bait, requiredLevel
         end
     end
-    return bestBait
+    return bestBait, currentLevel
 end
 
-RegisterNetEvent('qbfishing:server:catchFish', function()
-    local src = source
+local function timeByLevel(rod, bait, currentLevel)
+    local pole = Config.poles[rod]
+    local baitData = pole and pole.baits[bait]
+    if not baitData then return nil end
+
+    local requiredLevel = baitData.level or 1
+    local baseTime = baitData.baseTime or 12000
+    if currentLevel < requiredLevel then return nil end
+
+    local maxLevel = Config.fishing.maxLevel
+    local minTime = Config.fishing.minTime
+    if currentLevel >= maxLevel then return minTime end
+
+    local progress = (currentLevel - requiredLevel) / (maxLevel - requiredLevel)
+    local time = baseTime - ((baseTime - minTime) * progress)
+    return math.floor(math.max(minTime, time))
+end
+
+QB.callback.register('qbfishing:server:beginCatch', function(src)
+    local fishing = isFishing[src]
+    if not fishing then return false, 'You are not currently fishing.' end
+    if fishing.pending then return false, 'A catch is already in progress.' end
+
     local zone, zoneIndex = isInsideZone(src)
-    assert(zone and zoneIndex, 'You are not inside a fishing zone')
-    assert(isFishing[src], 'You are not currently fishing')
-    assert(isFishing[src].zone == zoneIndex, 'You are not in the correct fishing zone')
-    local pole = isFishing[src].rod
-    local zoneData = Config.zones[zoneIndex]
-    local confirmRod = zoneData.poles[pole]
-    assert(confirmRod, 'This rod cannot be used in this zone')
-    local bait = getBait(src)
-    local confirmBait = confirmRod.baits[bait]
-    assert(confirmBait, 'This bait cannot be used with the current rod in this zone')
-    if exports['qb-inventory']:RemoveItem(src, bait, 1) then
-        local caughtFish = confirmBait.catch[math.random(#confirmBait.catch)]
+    if not zone or zoneIndex ~= fishing.zone then return false, 'You have left the fishing zone.' end
+    if not zone.poles[fishing.rod] or not exports['qb-inventory']:HasItem(src, fishing.rod) then
+        return false, 'You do not have a usable fishing pole.'
+    end
+
+    local bait, level = getBait(src)
+    if not bait then return false, 'You have no usable bait for this pole.' end
+    local duration = timeByLevel(fishing.rod, bait, level)
+    if not duration then return false, 'You do not meet the level requirement for this bait.' end
+
+    local authorization = QB.minigames.authorizeProof(src, 'fishing')
+    fishing.pending = { bait = bait, authorization = authorization, readyAt = GetGameTimer() + duration }
+    return { duration = duration, authorization = authorization }
+end, { rateLimit = { max = 2, window = 1000 } })
+
+RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, authorization)
+    local src = source
+    local fishing = isFishing[src]
+    local pending = fishing and fishing.pending
+    if not pending or authorization ~= pending.authorization then return end
+    if proof == nil then
+        fishing.pending = nil
+        return
+    end
+    if type(proof) ~= 'string' or GetGameTimer() < pending.readyAt then return end
+
+    local zone, zoneIndex = isInsideZone(src)
+    if not zone or zoneIndex ~= fishing.zone or (requestedZone ~= nil and requestedZone ~= zoneIndex) then return end
+    local rod = zone.poles[fishing.rod]
+    if not rod or not exports['qb-inventory']:HasItem(src, fishing.rod) then return end
+    local bait = rod.baits[pending.bait]
+    if not bait or not exports['qb-inventory']:HasItem(src, pending.bait) then return end
+    local level = (exports.qbskills:getRep(src, 'fishing') or {}).level or 1
+    if level < (bait.level or 1) then return end
+    if not QB.minigames.consumeProof(src, proof, 'fishing', authorization) then return end
+
+    -- Consume before inventory exports so an in-flight catch cannot be rewarded twice.
+    fishing.pending = nil
+    if exports['qb-inventory']:RemoveItem(src, pending.bait, 1) then
+        local caughtFish = bait.catch[math.random(#bait.catch)]
         exports['qb-inventory']:AddItem(src, caughtFish, 1)
-        exports.qbskills:addRep(src, 'fishing', confirmBait.xp)
+        exports.qbskills:addRep(src, 'fishing', bait.xp)
     end
 end)
 
@@ -147,4 +196,9 @@ end)
 AddEventHandler('playerDropped', function()
     stopFishing(source)
     cooldown[source] = nil
+end)
+
+AddEventHandler('QBCore:Server:OnPlayerUnload', function(src)
+    stopFishing(src)
+    cooldown[src] = nil
 end)
