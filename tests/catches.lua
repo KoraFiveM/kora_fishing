@@ -1,5 +1,6 @@
 local root = debug.getinfo(1, 'S').source:sub(2):match('(.*/)') .. '../'
 local clientPath = arg[1] or root .. 'client/fishing.lua'
+local shopsPath = arg[2] or root .. 'server/shops.lua'
 local function noop() end
 local function vector(x, y, z, w) return { x = x, y = y, z = z, w = w } end
 
@@ -245,4 +246,97 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
         assert(s.fish == 0 and s.removed == 0, 'failure, cancellation, transport errors and zone exit cannot grant catches')
     end
 end
-print('qbfishing: catch authority, timing, proof binding, replay, inventory and client lifecycle regression passed')
+
+do
+    local s = setup()
+    local env, funds, attempts, grants, skillReads = s.env, 5000, 0, {}, 0
+    local shop = env.Config.Shop.locations[1].coords
+    s.positions[1] = vector(shop.x, shop.y, shop.z)
+    env.QB.distance = { player = function(src, coords, radius)
+        local pos = s.positions[src]
+        if not pos then return false end
+        return (pos.x - coords.x)^2 + (pos.y - coords.y)^2 + (pos.z - coords.z)^2 <= radius^2
+    end }
+    env.exports.qbcore = { removeMoney = function(_, src, account, amount)
+        assert(src == env.source and account == 'cash')
+        attempts = attempts + 1
+        if funds < amount then return false end
+        funds = funds - amount
+        return true
+    end }
+    env.exports.qbinventory = { addItem = function(_, src, item, amount)
+        grants[#grants + 1] = { src = src, item = item, amount = amount }
+        return true
+    end }
+    env.exports.qbskills.getRep = function(_, src, skill)
+        assert(src == env.source and skill == 'fishing')
+        skillReads = skillReads + 1
+        if s.pauseRep then coroutine.yield('skills-loading') end
+        if s.missingRep then return nil end
+        return { level = s.level }
+    end
+    assert(loadfile(shopsPath, 't', env))()
+    local purchase = s.events['qbfishing:server:purchaseItem']
+    local function deny(shopKey, itemKey, amount, ...)
+        local beforeFunds, beforeAttempts, beforeGrants = funds, attempts, #grants
+        assert(not pcall(purchase, shopKey, itemKey, amount, ...), 'shop purchase must reject ineligible players')
+        assert(funds == beforeFunds and attempts == beforeAttempts and #grants == beforeGrants,
+            'shop denial must precede debit and inventory insertion')
+    end
+    s.positions[1] = vector(shop.x + 100, shop.y, shop.z)
+    assert(not pcall(s.callbacks['qbfishing:client:confirmOpenShop'], 1, 1))
+    deny(1, 1, 1)
+    s.positions[1] = vector(shop.x, shop.y, shop.z)
+    deny(1, 2, 1, 99)
+    assert(s.callbacks['qbfishing:client:confirmOpenShop'](1, 1))
+    s.positions[1] = vector(shop.x + 100, shop.y, shop.z)
+    deny(1, 1, 1)
+    s.positions[1] = vector(shop.x + 5, shop.y, shop.z)
+    s.level = 15
+    purchase(1, 2, 2)
+    assert(funds == 4700 and #grants == 1 and grants[1].src == 1
+        and grants[1].item == 'magnet_pole' and grants[1].amount == 2,
+        'eligible purchase must retain configured price, quantity and inventory arguments')
+    s.positions[1] = vector(shop.x + 5.01, shop.y, shop.z)
+    deny(1, 2, 1)
+    env.Config.Shop.locations[2] = { coords = vector(shop.x + 500, shop.y, shop.z) }
+    s.positions[1] = vector(shop.x + 500, shop.y, shop.z)
+    deny(1, 2, 1)
+    purchase(2, 2, 1)
+    assert(funds == 4550 and #grants == 2, 'purchase must use the selected configured shop')
+    s.positions[1] = vector(shop.x, shop.y, shop.z)
+    s.level = 1
+    for _, unrestricted in ipairs({ 'nil', 'false' }) do
+        if unrestricted == 'false' then env.Config.Shop.items[2].level = false
+        else env.Config.Shop.items[2].level = nil end
+        local beforeReads = skillReads
+        purchase(1, 2, 1)
+        assert(skillReads == beforeReads, 'unrestricted items must preserve nil/false level semantics')
+    end
+    env.Config.Shop.items[2].level = 15
+    s.missingRep = true
+    purchase(1, 1, 1)
+    deny(1, 2, 1)
+    assert(funds == 4150 and #grants == 5, 'missing skill records keep the existing level1 default')
+    s.missingRep, s.level = false, 15
+    funds = 0
+    local beforeGrants = #grants
+    purchase(1, 2, 1)
+    assert(#grants == beforeGrants, 'insufficient funds must not deliver items')
+    deny(99, 1, 1)
+    deny(1, 99, 1)
+    deny(1, 1, 0)
+
+    funds, s.level, s.pauseRep = 500, 15, true
+    local beforeAttempts = attempts
+    s.positions[1] = vector(shop.x, shop.y, shop.z)
+    local request = coroutine.create(function() purchase(1, 2, 1) end)
+    local ok, result = coroutine.resume(request)
+    assert(ok and result == 'skills-loading')
+    s.positions[1] = vector(shop.x + 100, shop.y, shop.z)
+    ok, result = coroutine.resume(request)
+    assert(not ok and tostring(result):find('too far', 1, true))
+    assert(funds == 500 and attempts == beforeAttempts and #grants == beforeGrants,
+        'moving away during a skill lookup must be rejected before debit')
+end
+print('qbfishing: catch authority, timing, proof binding, replay, inventory, client lifecycle and shop eligibility regression passed')
