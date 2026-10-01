@@ -250,6 +250,7 @@ end
 do
     local s = setup()
     local env, funds, attempts, grants, skillReads = s.env, 5000, 0, {}, 0
+    local delivery, refundOK, refunds, messages = true, true, {}, {}
     local shop = env.Config.Shop.locations[1].coords
     s.positions[1] = vector(shop.x, shop.y, shop.z)
     env.QB.distance = { player = function(src, coords, radius)
@@ -263,11 +264,19 @@ do
         if funds < amount then return false end
         funds = funds - amount
         return true
+    end, addMoney = function(_, src, account, amount, reason, ignoreTax)
+        assert(src == env.source and account == 'cash' and reason == 'qbfishing-purchase-refund' and ignoreTax == true)
+        refunds[#refunds + 1] = amount
+        if not refundOK then return refundOK, 'refund unavailable' end
+        funds = funds + amount
+        return true
     end }
     env.exports.qbinventory = { addItem = function(_, src, item, amount)
+        if not delivery then return delivery, 'no free slot' end
         grants[#grants + 1] = { src = src, item = item, amount = amount }
         return true
     end }
+    env.print = function(message) messages[#messages + 1] = message end
     env.exports.qbskills.getRep = function(_, src, skill)
         assert(src == env.source and skill == 'fishing')
         skillReads = skillReads + 1
@@ -338,5 +347,27 @@ do
     assert(not ok and tostring(result):find('too far', 1, true))
     assert(funds == 500 and attempts == beforeAttempts and #grants == beforeGrants,
         'moving away during a skill lookup must be rejected before debit')
+
+    s.pauseRep = false
+    s.positions[1] = vector(shop.x, shop.y, shop.z)
+    delivery = false
+    assert(purchase(1, 2, 2) == nil)
+    assert(funds == 500 and refunds[1] == 300 and #grants == beforeGrants,
+        'failed delivery must refund the entire purchase price once')
+    delivery = nil
+    purchase(1, 1, 1)
+    assert(funds == 500 and refunds[2] == 100 and #refunds == 2 and #grants == beforeGrants,
+        'nil inventory failure also refunds without delivering an item')
+    delivery = true
+    purchase(1, 1, 1)
+    assert(funds == 400 and #grants == beforeGrants + 1 and #refunds == 2,
+        'successful delivery must retain the debit and never refund')
+    funds, delivery = 0, false
+    purchase(1, 1, 1)
+    assert(funds == 0 and #refunds == 2, 'failed debit must never create a refund')
+    funds, refundOK = 500, false
+    assert(purchase(1, 1, 1) == nil)
+    assert(funds == 400 and #refunds == 3 and #messages == 1
+        and messages[1]:find('refund unavailable', 1, true), 'rejected refund must be reported')
 end
 print('qbfishing: catch authority, timing, proof binding, replay, inventory, client lifecycle and shop eligibility regression passed')

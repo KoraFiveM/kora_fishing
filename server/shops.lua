@@ -22,7 +22,10 @@ RegisterNetEvent('qbfishing:server:purchaseItem', function(shopKey, itemKey, amo
     local price, item = data.price, data.name
     local totalPrice = price * amount
     assert(totalPrice > 0, 'Invalid total price')
-    if exports.qbcore:removeMoney(src, 'cash', totalPrice) then
-        exports.qbinventory:addItem(src, item, amount)
+    if not exports.qbcore:removeMoney(src, 'cash', totalPrice) then return end
+    if exports.qbinventory:addItem(src, item, amount) then return end
+    local refunded, refundError = exports.qbcore:addMoney(src, 'cash', totalPrice, 'qbfishing-purchase-refund', true)
+    if not refunded then
+        print(('qbfishing: purchase refund failed for player %s: %s'):format(src, tostring(refundError)))
     end
 end)
