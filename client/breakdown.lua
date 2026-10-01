@@ -14,10 +14,11 @@ if Config.Locations and Config.Locations.breakdown then
             for itemKey, item in ipairs(breakdown.items) do
                 if hasItem(item.item) then
                     local itemData = itemData(item.item)
+                    local label = itemData and itemData.label or item.label or item.item
                     items[#items + 1] = {
                         id = 'refine:' .. itemKey,
-                        label = itemData and itemData.label or item.label,
-                        description = 'Refine: ' .. (itemData and itemData.label or item.label),
+                        label = label,
+                        description = 'Refine: ' .. label,
                         image = itemData and itemData.image or item.image,
                         action = { id = refineAction, label = 'Refine' },
                     }
@@ -58,8 +59,10 @@ if Config.Locations and Config.Locations.breakdown then
                 local item = breakdown.items[itemKey]
                 if not item then return end
 
+                local sharedItem = not item.label and itemData(item.item)
+                local label = item.label or (sharedItem and sharedItem.label) or item.item
                 local progress = QB.progressbar.start({
-                    label = 'Refining ' .. item.label,
+                    label = 'Refining ' .. label,
                     duration = 5000,
                     useWhileDead = false,
                     canCancel = true,
