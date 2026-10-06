@@ -47,15 +47,14 @@ local function fish()
             waitTime = waitTime - 1000
         end
 
-        if isFishing and currentZone and currentRod then
-            local played, result = pcall(QB.minigames.play, 'fishing', nil, begun.authorization)
-            local proof = played and type(result) == 'table' and result.success and result.proof or nil
-            TriggerServerEvent('qbfishing:server:catchFish', currentZone, proof, begun.authorization)
-            if not played then
-                print(('qbfishing: fishing minigame failed: %s'):format(result))
-                QB.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
-                break
-            end
+        if not isFishing or not currentZone or not currentRod then break end
+        local played, result = pcall(QB.minigames.play, 'fishing', nil, begun.authorization)
+        local proof = played and type(result) == 'table' and result.success and result.proof or nil
+        TriggerServerEvent('qbfishing:server:catchFish', currentZone, proof, begun.authorization)
+        if not played then
+            print(('qbfishing: fishing minigame failed: %s'):format(result))
+            QB.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
+            break
         end
     end
 
