@@ -6,6 +6,7 @@ game "gta5"
 version  '1.0.0'
 
 dependency {
+	'qbcore',
 	'qbskills'
 }
 client_scripts {

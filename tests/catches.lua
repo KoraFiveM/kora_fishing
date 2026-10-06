@@ -51,7 +51,7 @@ local function setup()
             },
         },
         exports = {
-            ['qb-core'] = { CreateUseableItem = function(_, name, fn) state.useables[name] = fn end },
+            qbcore = { createUseable = function(_, name, fn) state.useables[name] = fn end },
             ['qb-inventory'] = {
                 HasItem = function(_, src, item)
                     if item == nil then src, item = 1, src end

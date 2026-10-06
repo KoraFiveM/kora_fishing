@@ -66,7 +66,7 @@ end
 local poles = { 'fishing_pole', 'magnet_pole' }
 
 for _, poleItem in ipairs(poles) do
-    exports['qb-core']:CreateUseableItem(poleItem, function(source)
+    exports.qbcore:createUseable(poleItem, function(source)
         if isFishing[source] then
             stopFishing(source)
             TriggerClientEvent('qbfishing:client:stopFishing', source)

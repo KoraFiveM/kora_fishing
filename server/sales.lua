@@ -15,10 +15,8 @@ RegisterServerEvent('qbfishing:server:sellItem', function(key, item, number)
     assert(sellData, 'Invalid item')
     local price = sellData.price
     local Item = sellData.item
-    local player = exports['qb-core']:GetPlayer(src)
-    local itemData = player.Functions.GetItemByName(Item)
 
     if exports.qbinventory:removeItem(src, Item, number) then
-        player.Functions.AddMoney('cash', price * number)
+        exports.qbcore:addMoney(src, 'cash', price * number)
     end
 end)
