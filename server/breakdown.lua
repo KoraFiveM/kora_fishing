@@ -15,7 +15,7 @@ RegisterServerEvent('qbfishing:server:refineItem', function(key, item)
     local refineData = bd.items[item]
     local item, rank = refineData.item, refineData.rank
     local give = {}
-    if not exports.qbinventory:removeItem(src, item, 1) then return end
+    if not exports.kora_inventory:removeItem(src, item, 1) then return end
     repeat
         Wait(0)
         rank = rank - 1
@@ -24,6 +24,6 @@ RegisterServerEvent('qbfishing:server:refineItem', function(key, item)
         give[#give + 1] = {item = giveItem, amount = amount}
     until rank == 0
     for _, itemData in ipairs(give) do
-        exports.qbinventory:addItem(src, itemData.item, itemData.amount )
+        exports.kora_inventory:addItem(src, itemData.item, itemData.amount )
     end
 end)

@@ -51,7 +51,7 @@ local function setup()
             },
         },
         exports = {
-            qbcore = { createUseable = function(_, name, fn) state.useables[name] = fn end },
+            kora_core = { createUseable = function(_, name, fn) state.useables[name] = fn end },
             ['qb-inventory'] = {
                 HasItem = function(_, src, item)
                     if item == nil then src, item = 1, src end
@@ -66,7 +66,7 @@ local function setup()
                 end,
                 AddItem = function(_, _, _, amount) state.fish = state.fish + amount; return true end,
             },
-            qbskills = {
+            kora_skills = {
                 getRep = function() return { level = state.level } end,
                 addRep = function(_, _, skill, amount) assert(skill == 'fishing'); state.xp = state.xp + amount end,
             },
@@ -258,7 +258,7 @@ do
         if not pos then return false end
         return (pos.x - coords.x)^2 + (pos.y - coords.y)^2 + (pos.z - coords.z)^2 <= radius^2
     end }
-    env.exports.qbcore = { removeMoney = function(_, src, account, amount)
+    env.exports.kora_core = { removeMoney = function(_, src, account, amount)
         assert(src == env.source and account == 'cash')
         attempts = attempts + 1
         if funds < amount then return false end
@@ -271,13 +271,13 @@ do
         funds = funds + amount
         return true
     end }
-    env.exports.qbinventory = { addItem = function(_, src, item, amount)
+    env.exports.kora_inventory = { addItem = function(_, src, item, amount)
         if not delivery then return delivery, 'no free slot' end
         grants[#grants + 1] = { src = src, item = item, amount = amount }
         return true
     end }
     env.print = function(message) messages[#messages + 1] = message end
-    env.exports.qbskills.getRep = function(_, src, skill)
+    env.exports.kora_skills.getRep = function(_, src, skill)
         assert(src == env.source and skill == 'fishing')
         skillReads = skillReads + 1
         if s.pauseRep then coroutine.yield('skills-loading') end

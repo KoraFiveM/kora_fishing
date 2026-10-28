@@ -15,14 +15,14 @@ local function setup(edit)
     local state = { owned = {}, definitions = {}, targets = {}, updates = {}, opened = {}, progress = {}, events = {}, notices = {}, lookups = 0, allowed = true, result = true }
     env.exports = {
         ['qb-inventory'] = { HasItem = function(_, name) return state.owned[name] == true end },
-        qbcore = { getShared = function(_, kind, name)
+        kora_core = { getShared = function(_, kind, name)
             assert(kind == 'items'); state.lookups = state.lookups + 1
             local record = state.definitions[name]
             if not record then return nil end
             -- The export stand-in returns a fresh record; actual itemData owns image rewriting.
             local copy = {}; for key, value in pairs(record) do copy[key] = value end; return copy
         end },
-        qbtarget = { addBoxZone = function(_, definition) state.targets[#state.targets + 1] = definition end },
+        kora_target = { addBoxZone = function(_, definition) state.targets[#state.targets + 1] = definition end },
     }
     env.QB = {
         nui = {
@@ -35,7 +35,7 @@ local function setup(edit)
         progressbar = { start = function(payload) state.progress[#state.progress + 1] = payload; return state.result end },
     }
     env.TriggerServerEvent = function(name, ...) state.events[#state.events + 1] = { name = name, args = table.pack(...) } end
-    assert(loadfile(resource .. '/../qbcore/shared/items.lua', 't', env))()
+    assert(loadfile(resource .. '/../kora_core/shared/items.lua', 't', env))()
     for _, definition in ipairs(env.QBCoreSeed.items) do state.definitions[definition.name] = definition end
     assert(loadfile(resource .. '/shared/config.lua', 't', env))()
     for _, item in ipairs(env.Config.Locations.breakdown.items) do state.owned[item.item] = true end
@@ -65,7 +65,7 @@ for key, item in ipairs(state.env.Config.Locations.breakdown.items) do
     eq(item.label, nil, 'stock config has no bespoke action label')
     eq(menuItems(state)[key].label, definition.label, 'stock list uses the shared label')
     eq(menuItems(state)[key].description, 'Refine: ' .. definition.label, 'stock list description')
-    eq(menuItems(state)[key].image, 'nui://qbinventory/images/' .. definition.image, 'existing image resolver stays unchanged')
+    eq(menuItems(state)[key].image, 'nui://kora_inventory/images/' .. definition.image, 'existing image resolver stays unchanged')
     local before = state.lookups
     eq(selectItem(state, key), nil, 'successful action return stays nil')
     eq(state.lookups - before, 1, 'stock action resolves shared item once')

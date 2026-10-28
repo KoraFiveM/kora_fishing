@@ -78,7 +78,7 @@ end
 for key, location in pairs(Config.Locations.buyer.locations) do
     local ped = QB.entities.create(location.model, location.coords, { freeze = true, invincible = true })
     SetEntityHeading(ped, location.coords.w)
-    exports.qbtarget:addEntity(ped, {
+    exports.kora_target:addEntity(ped, {
         {
             icon = 'fas fa-fish',
             label = 'Open Buyer Menu',

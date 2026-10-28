@@ -66,7 +66,7 @@ end
 local poles = { 'fishing_pole', 'magnet_pole' }
 
 for _, poleItem in ipairs(poles) do
-    exports.qbcore:createUseable(poleItem, function(source)
+    exports.kora_core:createUseable(poleItem, function(source)
         if isFishing[source] then
             stopFishing(source)
             TriggerClientEvent('qbfishing:client:stopFishing', source)
@@ -103,7 +103,7 @@ local function getBait(src)
     local rodData = zone.poles[rod]
     if not rodData then return nil end
 
-    local currentLevel = (exports.qbskills:getRep(src, 'fishing') or {}).level or 1
+    local currentLevel = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
 
     local bestBait, bestLevel = nil, math.huge
     for bait, baitData in pairs(rodData.baits) do
@@ -174,7 +174,7 @@ RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, au
     if not rod or not exports['qb-inventory']:HasItem(src, fishing.rod) then return end
     local bait = rod.baits[pending.bait]
     if not bait or not exports['qb-inventory']:HasItem(src, pending.bait) then return end
-    local level = (exports.qbskills:getRep(src, 'fishing') or {}).level or 1
+    local level = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
     if level < (bait.level or 1) then return end
     if not QB.minigames.consumeProof(src, proof, 'fishing', authorization) then return end
 
@@ -183,7 +183,7 @@ RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, au
     if exports['qb-inventory']:RemoveItem(src, pending.bait, 1) then
         local caughtFish = bait.catch[math.random(#bait.catch)]
         exports['qb-inventory']:AddItem(src, caughtFish, 1)
-        exports.qbskills:addRep(src, 'fishing', bait.xp)
+        exports.kora_skills:addRep(src, 'fishing', bait.xp)
     end
 end)
 

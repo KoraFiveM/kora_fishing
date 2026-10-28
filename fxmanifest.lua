@@ -1,4 +1,6 @@
 name "mustache-"
+-- Keep the legacy resource name resolvable for exports['qbfishing'] callers.
+provide 'qbfishing'
 author "mustache_dom"
 description " by mustache dom"
 fx_version "cerulean"
@@ -6,8 +8,8 @@ game "gta5"
 version  '1.0.0'
 
 dependency {
-	'qbcore',
-	'qbskills'
+	'kora_core',
+	'kora_skills'
 }
 client_scripts {
 	'client/functions.lua',
@@ -19,8 +21,8 @@ server_scripts {
 }
 
 shared_scripts {
-    '@qblib/init.lua',
-	'@qbcore/init.lua',
+    '@kora_lib/init.lua',
+	'@kora_core/init.lua',
 	'shared/**.lua',
 }
 

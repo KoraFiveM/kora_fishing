@@ -16,7 +16,7 @@ RegisterServerEvent('qbfishing:server:sellItem', function(key, item, number)
     local price = sellData.price
     local Item = sellData.item
 
-    if exports.qbinventory:removeItem(src, Item, number) then
-        exports.qbcore:addMoney(src, 'cash', price * number)
+    if exports.kora_inventory:removeItem(src, Item, number) then
+        exports.kora_core:addMoney(src, 'cash', price * number)
     end
 end)

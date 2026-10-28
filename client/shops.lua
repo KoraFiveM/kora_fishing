@@ -3,7 +3,7 @@ local purchaseAction = 'qbfishing:purchase'
 local currentShopKey = nil
 
 local function buildShopItems()
-    local level = (exports.qbskills:getRep('fishing') or {}).level or 1
+    local level = (exports.kora_skills:getRep('fishing') or {}).level or 1
     local items = {}
     for itemKey, item in ipairs(Config.Shop.items) do
         if not item.level or level >= item.level then
@@ -73,7 +73,7 @@ end
 for key, shopData in ipairs(Config.Shop.locations) do
     local ped = QB.entities.create(shopData.model, shopData.coords, { freeze = true, invincible = true })
     SetEntityHeading(ped, 20.0)
-    exports.qbtarget:addEntity(ped, {
+    exports.kora_target:addEntity(ped, {
         {
             icon = 'fas fa-fish',
             label = 'Open Fishing Shop',

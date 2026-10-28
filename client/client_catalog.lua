@@ -1,5 +1,5 @@
 
-local IMAGE_BASE = 'nui://qbinventory/images/'
+local IMAGE_BASE = 'nui://kora_inventory/images/'
 local appId = 'qb-fishing:catalog'
 local inited = false
 
@@ -13,7 +13,7 @@ local function currentFishingLevel()
     if not inited then
         return 1
     end
-    return (exports.qbskills:getRep('fishing') or {}).level or 1
+    return (exports.kora_skills:getRep('fishing') or {}).level or 1
 end
 
 local function sortedBaitNames(poleData)

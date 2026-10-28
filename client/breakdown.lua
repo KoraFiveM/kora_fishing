@@ -93,7 +93,7 @@ if Config.Locations and Config.Locations.breakdown then
         end
 
         for key, location in pairs(breakdown.locations) do
-            exports.qbtarget:addBoxZone({
+            exports.kora_target:addBoxZone({
                 coords = location.coords,
                 size = vector3(2.0, 2.0, 2.0),
                 rotation = 0,
