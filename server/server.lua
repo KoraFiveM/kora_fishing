@@ -136,7 +136,7 @@ local function timeByLevel(rod, bait, currentLevel)
     return math.floor(math.max(minTime, time))
 end
 
-QB.callback.register('qbfishing:server:beginCatch', function(src)
+Kora.callback.register('qbfishing:server:beginCatch', function(src)
     local fishing = isFishing[src]
     if not fishing then return false, 'You are not currently fishing.' end
     if fishing.pending then return false, 'A catch is already in progress.' end
@@ -152,7 +152,7 @@ QB.callback.register('qbfishing:server:beginCatch', function(src)
     local duration = timeByLevel(fishing.rod, bait, level)
     if not duration then return false, 'You do not meet the level requirement for this bait.' end
 
-    local authorization = QB.minigames.authorizeProof(src, 'fishing')
+    local authorization = Kora.minigames.authorizeProof(src, 'fishing')
     fishing.pending = { bait = bait, authorization = authorization, readyAt = GetGameTimer() + duration }
     return { duration = duration, authorization = authorization }
 end, { rateLimit = { max = 2, window = 1000 } })
@@ -176,7 +176,7 @@ RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, au
     if not bait or not exports['qb-inventory']:HasItem(src, pending.bait) then return end
     local level = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
     if level < (bait.level or 1) then return end
-    if not QB.minigames.consumeProof(src, proof, 'fishing', authorization) then return end
+    if not Kora.minigames.consumeProof(src, proof, 'fishing', authorization) then return end
 
     -- Consume before inventory exports so an in-flight catch cannot be rewarded twice.
     fishing.pending = nil

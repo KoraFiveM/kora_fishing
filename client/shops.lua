@@ -40,7 +40,7 @@ local function buildNavigation()
     } }
 end
 
-QB.nui.registerApp({
+Kora.nui.registerApp({
     id = appId,
     title = 'Fishing Shop',
     description = 'Buy poles, bait, and gear for fishing.',
@@ -63,15 +63,15 @@ QB.nui.registerApp({
 })
 
 local function openShop(key)
-    local confirm = QB.callback.trigger('qbfishing:client:confirmOpenShop', key)
+    local confirm = Kora.callback.trigger('qbfishing:client:confirmOpenShop', key)
     if not confirm then return end
     currentShopKey = key
-    QB.nui.updateApp(appId, { navigation = buildNavigation() })
-    QB.nui.openApp(appId)
+    Kora.nui.updateApp(appId, { navigation = buildNavigation() })
+    Kora.nui.openApp(appId)
 end
 
 for key, shopData in ipairs(Config.Shop.locations) do
-    local ped = QB.entities.create(shopData.model, shopData.coords, { freeze = true, invincible = true })
+    local ped = Kora.entities.create(shopData.model, shopData.coords, { freeze = true, invincible = true })
     SetEntityHeading(ped, 20.0)
     exports.kora_target:addEntity(ped, {
         {

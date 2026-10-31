@@ -34,9 +34,9 @@ end
 
 local function fish()
     while isFishing and currentZone and currentRod do
-        local begun, reason = QB.callback.trigger('qbfishing:server:beginCatch')
+        local begun, reason = Kora.callback.trigger('qbfishing:server:beginCatch')
         if type(begun) ~= 'table' then
-            QB.notify.send({ title = 'qb-fishing', message = reason or 'Unable to start a catch.', type = 'error' })
+            Kora.notify.send({ title = 'qb-fishing', message = reason or 'Unable to start a catch.', type = 'error' })
             break
         end
 
@@ -48,12 +48,12 @@ local function fish()
         end
 
         if not isFishing or not currentZone or not currentRod then break end
-        local played, result = pcall(QB.minigames.play, 'fishing', nil, begun.authorization)
+        local played, result = pcall(Kora.minigames.play, 'fishing', nil, begun.authorization)
         local proof = played and type(result) == 'table' and result.success and result.proof or nil
         TriggerServerEvent('qbfishing:server:catchFish', currentZone, proof, begun.authorization)
         if not played then
             print(('qbfishing: fishing minigame failed: %s'):format(result))
-            QB.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
+            Kora.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
             break
         end
     end
@@ -70,12 +70,12 @@ RegisterNetEvent('qbfishing:client:goFish', function(rod)
     if not currentZone then return end
 
     if not acceptablePole(currentZone, rod) then
-        QB.notify.send({ title = 'qb-fishing', message = 'You cannot use that pole here', type = 'error' })
+        Kora.notify.send({ title = 'qb-fishing', message = 'You cannot use that pole here', type = 'error' })
         return
     end
 
     if not hasRod(rod) then
-        QB.notify.send({ title = 'qb-fishing', message = 'You do not have that pole', type = 'error' })
+        Kora.notify.send({ title = 'qb-fishing', message = 'You do not have that pole', type = 'error' })
         return
     end
     currentRod = rod
@@ -88,7 +88,7 @@ RegisterNetEvent('qbfishing:client:stopFishing', function()
     currentRod = nil
     stopFishingAnim()
  
-    local objRod = QB.closest.object(GetEntityCoords(PlayerPedId()))
+    local objRod = Kora.closest.object(GetEntityCoords(PlayerPedId()))
     if not objRod or not objRod.id or not DoesEntityExist(objRod.id) then return end
  
     local entity = objRod.id
@@ -111,19 +111,19 @@ end)
 
 
 for key, zoneData in ipairs(Config.zones) do
-    QB.zones.poly({
+    Kora.zones.poly({
         points = zoneData.points,
         thickness = zoneData.thickness,
         debug = false,
         onEnter = function()
             if hasFishingPole(zoneData) then
-                QB.notify.send({ title = 'qb-fishing', message = 'You can use your fishing pole here', type = 'success' })
+                Kora.notify.send({ title = 'qb-fishing', message = 'You can use your fishing pole here', type = 'success' })
             end
             currentZone = key
         end,
         onExit = function()
             if hasFishingPole(zoneData) then
-                QB.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
+                Kora.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
             end
             if isFishing then TriggerServerEvent('qbfishing:server:stopFishing') end
             currentZone = nil

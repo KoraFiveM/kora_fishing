@@ -39,7 +39,7 @@ if Config.Locations and Config.Locations.breakdown then
             } }
         end
 
-        QB.nui.registerApp({
+        Kora.nui.registerApp({
             id = appId,
             title = 'Refine Menu',
             description = 'Break down salvage for crafting materials.',
@@ -61,7 +61,7 @@ if Config.Locations and Config.Locations.breakdown then
 
                 local sharedItem = not item.label and itemData(item.item)
                 local label = item.label or (sharedItem and sharedItem.label) or item.item
-                local progress = QB.progressbar.start({
+                local progress = Kora.progressbar.start({
                     label = 'Refining ' .. label,
                     duration = 5000,
                     useWhileDead = false,
@@ -78,18 +78,18 @@ if Config.Locations and Config.Locations.breakdown then
         })
 
         local function openRefineMenu(key)
-            local can = QB.callback.trigger('qbfishing:server:openRefineMenu', key)
+            local can = Kora.callback.trigger('qbfishing:server:openRefineMenu', key)
             if not can then return end
 
             local items = buildRefineItems()
             if #items == 0 then
-                QB.notify.send({ title = "qb-fishing", message = "You do not have any items to refine.", type = "error" })
+                Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to refine.", type = "error" })
                 return
             end
 
             currentBreakdownKey = key
-            QB.nui.updateApp(appId, { navigation = buildNavigation() })
-            QB.nui.openApp(appId)
+            Kora.nui.updateApp(appId, { navigation = buildNavigation() })
+            Kora.nui.openApp(appId)
         end
 
         for key, location in pairs(breakdown.locations) do

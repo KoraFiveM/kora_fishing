@@ -40,7 +40,7 @@ local function buildNavigation()
     } }
 end
 
-QB.nui.registerApp({
+Kora.nui.registerApp({
     id = appId,
     title = 'Fish Buyer',
     description = 'Sell fish and other catches for cash.',
@@ -63,20 +63,20 @@ QB.nui.registerApp({
 })
 
 local function openBuyerMenu(key)
-    local can = QB.callback.trigger('qbfishing:server:canOpenBuyerMenu', key)
+    local can = Kora.callback.trigger('qbfishing:server:canOpenBuyerMenu', key)
     if not can then return end
     local items = buildBuyerItems()
     if #items == 0 then
-        QB.notify.send({ title = "qb-fishing", message = "You do not have any items to sell.", type = "error" })
+        Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to sell.", type = "error" })
         return
     end
     currentBuyerKey = key
-    QB.nui.updateApp(appId, { navigation = buildNavigation() })
-    QB.nui.openApp(appId)
+    Kora.nui.updateApp(appId, { navigation = buildNavigation() })
+    Kora.nui.openApp(appId)
 end
 
 for key, location in pairs(Config.Locations.buyer.locations) do
-    local ped = QB.entities.create(location.model, location.coords, { freeze = true, invincible = true })
+    local ped = Kora.entities.create(location.model, location.coords, { freeze = true, invincible = true })
     SetEntityHeading(ped, location.coords.w)
     exports.kora_target:addEntity(ped, {
         {

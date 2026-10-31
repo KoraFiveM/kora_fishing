@@ -24,7 +24,7 @@ local function setup(edit)
         end },
         kora_target = { addBoxZone = function(_, definition) state.targets[#state.targets + 1] = definition end },
     }
-    env.QB = {
+    env.Kora = {
         nui = {
             registerApp = function(app) state.app = app end,
             updateApp = function(id, update) state.updates[#state.updates + 1] = { id = id, update = update } end,

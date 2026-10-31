@@ -4,8 +4,8 @@ local appId = 'qb-fishing:catalog'
 local inited = false
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
-    if QB.nui.isAppOpen(appId) then
-        QB.nui.closeApp(appId)
+    if Kora.nui.isAppOpen(appId) then
+        Kora.nui.closeApp(appId)
     end
 end)
 
@@ -106,7 +106,7 @@ local function buildNavigation()
     return nav
 end
 
-QB.nui.registerApp({
+Kora.nui.registerApp({
     id = appId,
     title = 'Fishing Catalog',
     description = 'Poles, baits, and fish unlocked at your current fishing level.',
@@ -119,10 +119,10 @@ QB.nui.registerApp({
 })
 
 local function openFishingCatalog()
-    if QB.nui.isAppOpen(appId) then return end
+    if Kora.nui.isAppOpen(appId) then return end
 
-    QB.nui.updateApp(appId, { navigation = buildNavigation() })
-    QB.nui.openApp(appId)
+    Kora.nui.updateApp(appId, { navigation = buildNavigation() })
+    Kora.nui.openApp(appId)
 end
 
 RegisterCommand('fishcatalog', function()

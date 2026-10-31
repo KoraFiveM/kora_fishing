@@ -28,7 +28,7 @@ local function setup()
             end
         end,
         Wait = coroutine.yield,
-        QB = {
+        Kora = {
             callback = { register = function(name, fn, options)
                 state.callbacks[name], state.callbackOptions[name] = fn, options
             end },
@@ -200,7 +200,7 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
         PlayerPedId = function() return 1 end,
         TaskStartScenarioInPlace = noop, ClearPedTasks = noop,
         Wait = coroutine.yield,
-        QB = {
+        Kora = {
             callback = { trigger = function(name)
                 assert(name == 'qbfishing:server:beginCatch')
                 beginCount = beginCount + 1
@@ -253,7 +253,7 @@ do
     local delivery, refundOK, refunds, messages = true, true, {}, {}
     local shop = env.Config.Shop.locations[1].coords
     s.positions[1] = vector(shop.x, shop.y, shop.z)
-    env.QB.distance = { player = function(src, coords, radius)
+    env.Kora.distance = { player = function(src, coords, radius)
         local pos = s.positions[src]
         if not pos then return false end
         return (pos.x - coords.x)^2 + (pos.y - coords.y)^2 + (pos.z - coords.z)^2 <= radius^2
