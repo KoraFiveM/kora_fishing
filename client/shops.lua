@@ -10,7 +10,7 @@ local function buildShopItems()
             local itemInfo = itemData(item.name)
             items[#items + 1] = {
                 id = 'shop:' .. itemKey,
-                label = itemInfo and itemInfo.label,
+                label = (itemInfo and itemInfo.label) or item.label or item.name,
                 description = 'In Stock: ' .. item.amount .. ' Price: ' .. item.price,
                 image = itemInfo and itemInfo.image or item.image,
                 action = {
