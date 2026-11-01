@@ -6,10 +6,6 @@ local function acceptablePole(zoneIndex, rod)
     return zone.poles[rod] ~= nil
 end
 
-local function hasRod(rod)
-    return exports['qb-inventory']:HasItem(rod)
-end
-
 local function hasFishingPole(zoneData)
     for pole in pairs(zoneData.poles) do
         if exports['qb-inventory']:HasItem(pole) then
@@ -74,7 +70,7 @@ RegisterNetEvent('qbfishing:client:goFish', function(rod)
         return
     end
 
-    if not hasRod(rod) then
+    if not exports['qb-inventory']:HasItem(rod) then
         Kora.notify.send({ title = 'qb-fishing', message = 'You do not have that pole', type = 'error' })
         return
     end
@@ -87,10 +83,10 @@ RegisterNetEvent('qbfishing:client:stopFishing', function()
     isFishing = false
     currentRod = nil
     stopFishingAnim()
- 
+
     local objRod = Kora.closest.object(GetEntityCoords(PlayerPedId()))
     if not objRod or not objRod.id or not DoesEntityExist(objRod.id) then return end
- 
+
     local entity = objRod.id
     local hash = GetEntityModel(entity)
     if hash ~= GetHashKey('prop_fishing_rod_01') then return end

@@ -27,7 +27,6 @@ local function sortedBaitNames(poleData)
     return names
 end
 
-
 local function buildFishItems(catchList, unlocked)
     local fishItems = {}
     for i = 1, #catchList do
