@@ -70,12 +70,12 @@ for _, poleItem in ipairs(poles) do
         if isFishing[source] then
             stopFishing(source)
             TriggerClientEvent('qbfishing:client:stopFishing', source)
-            TriggerClientEvent('QBCore:Notify', source, 'You reel in your line.', 'success')
+            Kora.notify.send(source, { title = 'Fishing', message = 'You reel in your line.', type = 'success' })
             return
         end
 
         if cooldown[source] then
-            TriggerClientEvent('QBCore:Notify', source, 'You must wait before fishing again.', 'error')
+            Kora.notify.send(source, { title = 'Fishing', message = 'You must wait before fishing again.', type = 'error' })
             return
         end
 
@@ -85,7 +85,7 @@ for _, poleItem in ipairs(poles) do
             startCooldown(source)
             TriggerClientEvent('qbfishing:client:goFish', source, poleItem)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'You are not in a fishing zone.', 'error')
+            Kora.notify.send(source, { title = 'Fishing', message = 'You are not in a fishing zone.', type = 'error' })
         end
     end)
 end
@@ -110,7 +110,7 @@ local function getBait(src)
         local requiredLevel = baitData.level or 1
         if requiredLevel < bestLevel
             and currentLevel >= requiredLevel
-            and exports['qb-inventory']:HasItem(src, bait)
+            and exports.kora_inventory:hasItem(src, bait)
         then
             bestBait, bestLevel = bait, requiredLevel
         end
@@ -143,7 +143,7 @@ Kora.callback.register('qbfishing:server:beginCatch', function(src)
 
     local zone, zoneIndex = isInsideZone(src)
     if not zone or zoneIndex ~= fishing.zone then return false, 'You have left the fishing zone.' end
-    if not zone.poles[fishing.rod] or not exports['qb-inventory']:HasItem(src, fishing.rod) then
+    if not zone.poles[fishing.rod] or not exports.kora_inventory:hasItem(src, fishing.rod) then
         return false, 'You do not have a usable fishing pole.'
     end
 
@@ -171,18 +171,18 @@ RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, au
     local zone, zoneIndex = isInsideZone(src)
     if not zone or zoneIndex ~= fishing.zone or (requestedZone ~= nil and requestedZone ~= zoneIndex) then return end
     local rod = zone.poles[fishing.rod]
-    if not rod or not exports['qb-inventory']:HasItem(src, fishing.rod) then return end
+    if not rod or not exports.kora_inventory:hasItem(src, fishing.rod) then return end
     local bait = rod.baits[pending.bait]
-    if not bait or not exports['qb-inventory']:HasItem(src, pending.bait) then return end
+    if not bait or not exports.kora_inventory:hasItem(src, pending.bait) then return end
     local level = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
     if level < (bait.level or 1) then return end
     if not Kora.minigames.consumeProof(src, proof, 'fishing', authorization) then return end
 
     -- Consume before inventory exports so an in-flight catch cannot be rewarded twice.
     fishing.pending = nil
-    if exports['qb-inventory']:RemoveItem(src, pending.bait, 1) then
+    if exports.kora_inventory:removeItem(src, pending.bait, 1) then
         local caughtFish = bait.catch[math.random(#bait.catch)]
-        exports['qb-inventory']:AddItem(src, caughtFish, 1)
+        exports.kora_inventory:addItem(src, caughtFish, 1)
         exports.kora_skills:addRep(src, 'fishing', bait.xp)
     end
 end)

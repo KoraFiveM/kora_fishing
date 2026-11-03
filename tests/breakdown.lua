@@ -14,7 +14,7 @@ local function setup(edit)
     env.vector4 = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end
     local state = { owned = {}, definitions = {}, targets = {}, updates = {}, opened = {}, progress = {}, events = {}, notices = {}, lookups = 0, allowed = true, result = true }
     env.exports = {
-        ['qb-inventory'] = { HasItem = function(_, name) return state.owned[name] == true end },
+        kora_inventory = { HasItem = function(_, name) return state.owned[name] == true end },
         kora_core = { getShared = function(_, kind, name)
             assert(kind == 'items'); state.lookups = state.lookups + 1
             local record = state.definitions[name]

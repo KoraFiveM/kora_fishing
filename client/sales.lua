@@ -1,5 +1,5 @@
 local function hasItem(item)
-    return exports['qb-inventory']:HasItem(item)
+    return exports.kora_inventory:HasItem(item)
 end
 
 local appId = 'qbfishing:buyer'
@@ -67,7 +67,7 @@ local function openBuyerMenu(key)
     if not can then return end
     local items = buildBuyerItems()
     if #items == 0 then
-        Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to sell.", type = "error" })
+        Kora.notify.send({ title = 'Fishing', message = "You do not have any items to sell.", type = "error" })
         return
     end
     currentBuyerKey = key

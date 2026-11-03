@@ -1,5 +1,5 @@
 local function hasItem(item)
-    return exports['qb-inventory']:HasItem(item)
+    return exports.kora_inventory:HasItem(item)
 end
 if Config.Locations and Config.Locations.breakdown then
     local breakdown = Config.Locations.breakdown
@@ -83,7 +83,7 @@ if Config.Locations and Config.Locations.breakdown then
 
             local items = buildRefineItems()
             if #items == 0 then
-                Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to refine.", type = "error" })
+                Kora.notify.send({ title = 'Fishing', message = "You do not have any items to refine.", type = "error" })
                 return
             end
 

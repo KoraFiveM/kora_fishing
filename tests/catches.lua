@@ -29,6 +29,7 @@ local function setup()
         end,
         Wait = coroutine.yield,
         Kora = {
+            notify = { send = function() end },
             callback = { register = function(name, fn, options)
                 state.callbacks[name], state.callbackOptions[name] = fn, options
             end },
@@ -52,19 +53,18 @@ local function setup()
         },
         exports = {
             kora_core = { createUseable = function(_, name, fn) state.useables[name] = fn end },
-            ['qb-inventory'] = {
-                HasItem = function(_, src, item)
-                    if item == nil then src, item = 1, src end
+            kora_inventory = {
+                hasItem = function(_, src, item)
                     return (state.items[src][item] or 0) > 0
                 end,
-                RemoveItem = function(_, src, item, amount)
+                removeItem = function(_, src, item, amount)
                     if (state.items[src][item] or 0) < amount then return false end
                     state.items[src][item] = state.items[src][item] - amount
                     state.removed = state.removed + amount
                     if state.reenter then state.reenter() end
                     return true
                 end,
-                AddItem = function(_, _, _, amount) state.fish = state.fish + amount; return true end,
+                addItem = function(_, _, _, amount) state.fish = state.fish + amount; return true end,
             },
             kora_skills = {
                 getRep = function() return { level = state.level } end,
@@ -198,6 +198,7 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
         source = 65535,
         RegisterNetEvent = function(name, fn) clientEvents[name] = fn end,
         PlayerPedId = function() return 1 end,
+        exports = { kora_inventory = { HasItem = function(_, item) return s.env.exports.kora_inventory.hasItem(nil, 1, item) end } },
         TaskStartScenarioInPlace = noop, ClearPedTasks = noop,
         Wait = coroutine.yield,
         Kora = {
@@ -253,6 +254,8 @@ do
     local delivery, refundOK, refunds, messages = true, true, {}, {}
     local shop = env.Config.Shop.locations[1].coords
     s.positions[1] = vector(shop.x, shop.y, shop.z)
+    env.Kora.util, env.Kora.compat = env.Kora.util or {}, env.Kora.compat or {}
+    assert(loadfile("../kora_lib/modules/util/shared.lua", "t", env))()
     env.Kora.distance = { player = function(src, coords, radius)
         local pos = s.positions[src]
         if not pos then return false end
