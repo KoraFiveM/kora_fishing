@@ -13,10 +13,8 @@ RegisterServerEvent('qbfishing:server:sellItem', function(key, item, number)
     assert(Kora.distance.player(src, Config.Locations.buyer.locations[key].coords, 5), 'Player is too far from the buyer location')
     local sellData = Config.Locations.buyer.items[item]
     assert(sellData, 'Invalid item')
-    local price = sellData.price
-    local Item = sellData.item
-
-    if exports.kora_inventory:removeItem(src, Item, number) then
-        exports.kora_core:addMoney(src, 'cash', price * number)
-    end
+    -- One transaction: the client amount must be a whole number (1-1000), and items and cash move together.
+    exports.kora_core:sellItem(src, {
+        item = sellData.item, amount = number, unitPrice = sellData.price, reason = 'qbfishing:sell',
+    })
 end)

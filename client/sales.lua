@@ -19,7 +19,7 @@ local function buildBuyerItems()
                     id = sellAction,
                     label = 'Sell',
                     fields = {
-                        { id = 'amount', label = 'Amount', type = 'number', min = 1, required = true },
+                        { id = 'amount', label = 'Amount', type = 'number', min = 1, step = 1, required = true },
                     },
                 },
             }
@@ -55,7 +55,7 @@ Kora.nui.registerApp({
         if actionId ~= sellAction then return end
         local itemKey = tonumber((context.itemId or ''):match('^buyer:(%d+)$'))
         local amount = context.value and tonumber(context.value.amount)
-        if not itemKey or not amount or amount <= 0 then
+        if not itemKey or not amount or amount <= 0 or amount % 1 ~= 0 then
             return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
         end
         TriggerServerEvent('qbfishing:server:sellItem', currentBuyerKey, itemKey, amount)
