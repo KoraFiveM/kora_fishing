@@ -10,10 +10,12 @@ RegisterNetEvent('qbfishing:server:purchaseItem', function(shopKey, itemKey, amo
     local src = source
     assert(shopKey, 'Invalid shop key')
     assert(itemKey, 'Invalid item key')
-    assert(amount and amount > 0, 'Invalid amount')
     assert(Config.Shop and Config.Shop.locations and Config.Shop.locations[shopKey], 'Shop does not exist')
     assert(Config.Shop.items[itemKey], 'Item does not exist')
     local data = Config.Shop.items[itemKey]
+    local count = Kora.util.toAmount(amount, { max = data.maxAmount or 100 })
+    assert(count, 'Invalid amount')
+    amount = count
     if data.level then
         local level = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
         assert(level >= data.level, 'Your fishing level is too low to purchase this item')

@@ -13,17 +13,24 @@ RegisterServerEvent('qbfishing:server:refineItem', function(key, item)
     assert(Kora.distance.player(src, Config.Locations.breakdown.locations[key].coords, 5), 'Player is too far from the breakdown location')
     local bd = Config.Locations.breakdown
     local refineData = bd.items[item]
-    local item, rank = refineData.item, refineData.rank
+    assert(type(refineData) == 'table' and refineData.item and Kora.util.isInteger(refineData.rank) and refineData.rank > 0, 'Invalid refine item')
+    local input, rank = refineData.item, refineData.rank
     local give = {}
-    if not exports.kora_inventory:removeItem(src, item, 1) then return end
-    repeat
-        Wait(0)
-        rank = rank - 1
-        local giveItem = bd.receiveItems[math.random(#bd.receiveItems)]
-        local amount = math.random(bd.receiveAmounts.min, bd.receiveAmounts.max)
-        give[#give + 1] = {item = giveItem, amount = amount}
-    until rank == 0
+    for _ = 1, rank do
+        give[#give + 1] = {
+            item = bd.receiveItems[math.random(#bd.receiveItems)],
+            amount = math.random(bd.receiveAmounts.min, bd.receiveAmounts.max),
+        }
+    end
+    if not exports.kora_inventory:removeItem(src, input, 1) then return end
+    local granted = {}
     for _, itemData in ipairs(give) do
-        exports.kora_inventory:addItem(src, itemData.item, itemData.amount )
+        if not exports.kora_inventory:addItem(src, itemData.item, itemData.amount) then
+            -- Roll back so a full inventory never costs the player the input.
+            for _, done in ipairs(granted) do exports.kora_inventory:removeItem(src, done.item, done.amount) end
+            exports.kora_inventory:addItem(src, input, 1)
+            return
+        end
+        granted[#granted + 1] = itemData
     end
 end)
