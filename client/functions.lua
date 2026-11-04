@@ -5,3 +5,13 @@ function itemData(itemKey)
     item.image = 'nui://kora_inventory/images/' .. item.image
     return item
 end
+
+function hardenNpcPed(ped)
+    if not Config.npcIgnoreTempEvents then return end
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    SetPedFleeAttributes(ped, 0, false)
+    SetPedCombatAttributes(ped, 17, true)
+    SetPedCanRagdoll(ped, false)
+    SetPedConfigFlag(ped, 118, true)
+    SetPedConfigFlag(ped, 208, true)
+end

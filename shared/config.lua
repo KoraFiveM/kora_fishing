@@ -1,5 +1,8 @@
 Config = {}
 
+-- Shop/buyer NPCs ignore temporary events (punched, shot at, shouted at) and stay put.
+Config.npcIgnoreTempEvents = true
+
 Config.fishing = {
     maxLevel = 99,
     minTime = 4000,

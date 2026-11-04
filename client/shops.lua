@@ -73,6 +73,7 @@ end
 for key, shopData in ipairs(Config.Shop.locations) do
     local ped = Kora.entities.create(shopData.model, shopData.coords, { freeze = true, invincible = true })
     SetEntityHeading(ped, 20.0)
+    hardenNpcPed(ped)
     exports.kora_target:addEntity(ped, {
         {
             icon = 'fas fa-fish',
