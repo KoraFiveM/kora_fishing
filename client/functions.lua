@@ -12,6 +12,4 @@ function hardenNpcPed(ped)
     SetPedFleeAttributes(ped, 0, false)
     SetPedCombatAttributes(ped, 17, true)
     SetPedCanRagdoll(ped, false)
-    SetPedConfigFlag(ped, 118, true)
-    SetPedConfigFlag(ped, 208, true)
 end
