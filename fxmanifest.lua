@@ -9,7 +9,10 @@ version  '1.0.0'
 
 dependency {
 	'kora_core',
-	'kora_skills'
+	'kora_skills',
+	-- client/sales.lua and client/breakdown.lua call exports['qb-inventory']:HasItem at load;
+	-- kora_inventory registers that export, so it must start first.
+	'kora_inventory'
 }
 client_scripts {
 	'client/functions.lua',

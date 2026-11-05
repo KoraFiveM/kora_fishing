@@ -1,5 +1,7 @@
 local function hasItem(item)
-    return exports['qb-inventory']:HasItem(item)
+    -- registerApp builds the menu at load, before the qb-inventory compat export may exist.
+    local ok, has = pcall(function() return exports['qb-inventory']:HasItem(item) end)
+    return ok and has == true
 end
 
 local appId = 'qbfishing:buyer'
