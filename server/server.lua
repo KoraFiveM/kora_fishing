@@ -129,7 +129,7 @@ local function timeByLevel(rod, bait, currentLevel)
 
     local maxLevel = Config.fishing.maxLevel
     local minTime = Config.fishing.minTime
-    if currentLevel >= maxLevel then return minTime end
+    if currentLevel >= maxLevel or maxLevel <= requiredLevel then return minTime end
 
     local progress = (currentLevel - requiredLevel) / (maxLevel - requiredLevel)
     local time = baseTime - ((baseTime - minTime) * progress)

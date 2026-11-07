@@ -13,6 +13,7 @@ RegisterServerEvent('qbfishing:server:refineItem', function(key, item)
     assert(Kora.distance.player(src, Config.Locations.breakdown.locations[key].coords, 5), 'Player is too far from the breakdown location')
     local bd = Config.Locations.breakdown
     local refineData = bd.items[item]
+    assert(refineData, 'Invalid item')
     local item, rank = refineData.item, refineData.rank
     local give = {}
     if not exports.kora_inventory:removeItem(src, item, 1) then return end
