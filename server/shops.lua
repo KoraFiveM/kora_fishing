@@ -14,6 +14,8 @@ RegisterNetEvent('kora_fishing:server:purchaseItem', function(shopKey, itemKey, 
     assert(Config.Shop and Config.Shop.locations and Config.Shop.locations[shopKey], 'Shop does not exist')
     assert(Config.Shop.items[itemKey], 'Item does not exist')
     local data = Config.Shop.items[itemKey]
+    -- The shop shows "In Stock: <amount>" (client/shops.lua); never sell more in one purchase.
+    assert(not data.amount or amount <= data.amount, 'The shop does not have that many in stock')
     if data.level then
         local level = (exports.kora_skills:getRep(src, 'fishing') or {}).level or 1
         assert(level >= data.level, 'Your fishing level is too low to purchase this item')
