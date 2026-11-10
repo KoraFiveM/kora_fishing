@@ -102,7 +102,7 @@ Feature: kora_fishing — Jobs
     Given my cash balance is at least 500
     When I manually: go to the Paleto fishing shop ped
     And I select the "Open Fishing Shop" target option
-    Then the "qbfishing:shop" app opens
+    Then the "kora_fishing:shop" app opens
     And I confirm: the list shows items by level
     When I manually: choose an item, enter an amount and press Buy
     Then I confirm: my cash is charged and I receive the items
@@ -114,7 +114,7 @@ Feature: kora_fishing — Jobs
     """
     When I manually: go to the Paleto fishing shop ped
     And I select the "Open Fishing Shop" target option
-    Then the "qbfishing:shop" app opens
+    Then the "kora_fishing:shop" app opens
     And I confirm: at a low fishing level the magnet pole and baits above my level are hidden or refused
 
   @kora_fishing @checklist @checklist:kora_fishing:fish-buyer @cat:jobs
@@ -125,7 +125,7 @@ Feature: kora_fishing — Jobs
     Given I have 3 "bass"
     When I manually: go to the Fish Buyer ped at Del Perro pier
     And I select the "Open Buyer Menu" target option
-    Then the "qbfishing:buyer" app opens
+    Then the "kora_fishing:buyer" app opens
     When I manually: pick a fish and an amount and press Sell
     Then I confirm: my cash is increased by the fish price per fish sold
 
@@ -159,7 +159,7 @@ Feature: kora_fishing — Jobs
     And I have 1 "rusty_tire"
     When I manually: go to the Breakdown Location in the Davis area
     And I select the "Open Refine Menu" target option
-    Then the "qbfishing:breakdown" app opens
+    Then the "kora_fishing:breakdown" app opens
     When I manually: refine the rusty items
     Then a progress bar should run
     And I confirm: I receive random materials such as rubber, scrap or copper

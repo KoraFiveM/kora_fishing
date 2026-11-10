@@ -7,8 +7,8 @@ if Config.Locations and Config.Locations.breakdown then
     local breakdown = Config.Locations.breakdown
 
     if #breakdown.items > 0 and #breakdown.locations > 0 then
-        local appId = 'qbfishing:breakdown'
-        local refineAction = 'qbfishing:refine'
+        local appId = 'kora_fishing:breakdown'
+        local refineAction = 'kora_fishing:refine'
         local currentBreakdownKey = nil
 
         local function buildRefineItems()
@@ -75,12 +75,12 @@ if Config.Locations and Config.Locations.breakdown then
                     }
                 })
                 if not progress then return end
-                TriggerServerEvent('qbfishing:server:refineItem', currentBreakdownKey, itemKey)
+                TriggerServerEvent('kora_fishing:server:refineItem', currentBreakdownKey, itemKey)
             end,
         })
 
         local function openRefineMenu(key)
-            local can = Kora.callback.trigger('qbfishing:server:openRefineMenu', key)
+            local can = Kora.callback.trigger('kora_fishing:server:openRefineMenu', key)
             if not can then return end
 
             local items = buildRefineItems()

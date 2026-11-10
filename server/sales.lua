@@ -1,4 +1,4 @@
-Kora.callback.register('qbfishing:server:canOpenBuyerMenu', function(source,  key)
+Kora.callback.register('kora_fishing:server:canOpenBuyerMenu', function(source,  key)
     local src = source
     assert(src and key, 'Invalid source or key')
     assert(Config.Locations and Config.Locations.buyer and Config.Locations.buyer.locations[key], 'Invalid buyer location key')
@@ -6,7 +6,7 @@ Kora.callback.register('qbfishing:server:canOpenBuyerMenu', function(source,  ke
     return true
 end)
 
-RegisterServerEvent('qbfishing:server:sellItem', function(key, item, number)
+RegisterServerEvent('kora_fishing:server:sellItem', function(key, item, number)
     local src = source
     assert(src and key and item and number, 'Invalid parameters')
     assert(type(number) == 'number' and number > 0 and number == math.floor(number), 'Invalid amount')

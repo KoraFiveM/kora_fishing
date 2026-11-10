@@ -1,4 +1,4 @@
-Kora.callback.register('qbfishing:server:openRefineMenu', function(source, key)
+Kora.callback.register('kora_fishing:server:openRefineMenu', function(source, key)
     local src = source
     assert(src and key, 'Invalid source or key')
     assert(Config.Locations and Config.Locations.breakdown and Config.Locations.breakdown.locations[key], 'Invalid breakdown location key')
@@ -6,7 +6,7 @@ Kora.callback.register('qbfishing:server:openRefineMenu', function(source, key)
     return true
 end)
 
-RegisterServerEvent('qbfishing:server:refineItem', function(key, item)
+RegisterServerEvent('kora_fishing:server:refineItem', function(key, item)
     local src = source
     assert(src and key and item, 'Invalid parameters')
     assert(Config.Locations and Config.Locations.breakdown and Config.Locations.breakdown.locations[key], 'Invalid breakdown location key')

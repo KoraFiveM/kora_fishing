@@ -1,6 +1,4 @@
 name "mustache-"
--- Keep the legacy resource name resolvable for exports['qbfishing'] callers.
-provide 'qbfishing'
 author "mustache_dom"
 description " by mustache dom"
 fx_version "cerulean"

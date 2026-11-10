@@ -1,4 +1,4 @@
--- Run from qbfishing: lua tests/breakdown.lua [breakdown-source] [resource-root]
+-- Run from kora_fishing: lua tests/breakdown.lua [breakdown-source] [resource-root]
 -- Actual config, shared item catalogue, item resolver and registered target/app callbacks; host boundaries are inert.
 local resource = arg[2] or '.'
 local sourcePath = arg[1] or resource .. '/client/breakdown.lua'
@@ -9,7 +9,7 @@ local function eq(actual, expected, why)
 end
 local function setup(edit)
     local env = {}; for key, value in pairs(_G) do env[key] = value end
-    env._G, env.QBCoreSeed = env, nil
+    env._G, env.KoraCoreSeed = env, nil
     env.vector3 = function(x, y, z) return { x = x, y = y, z = z } end
     env.vector4 = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end
     local state = { owned = {}, definitions = {}, targets = {}, updates = {}, opened = {}, progress = {}, events = {}, notices = {}, lookups = 0, allowed = true, result = true }
@@ -30,13 +30,13 @@ local function setup(edit)
             updateApp = function(id, update) state.updates[#state.updates + 1] = { id = id, update = update } end,
             openApp = function(id) state.opened[#state.opened + 1] = id end,
         },
-        callback = { trigger = function(name, key) assert(name == 'qbfishing:server:openRefineMenu'); state.lastKey = key; return state.allowed end },
+        callback = { trigger = function(name, key) assert(name == 'kora_fishing:server:openRefineMenu'); state.lastKey = key; return state.allowed end },
         notify = { send = function(notice) state.notices[#state.notices + 1] = notice end },
         progressbar = { start = function(payload) state.progress[#state.progress + 1] = payload; return state.result end },
     }
     env.TriggerServerEvent = function(name, ...) state.events[#state.events + 1] = { name = name, args = table.pack(...) } end
     assert(loadfile(resource .. '/../kora_core/shared/items.lua', 't', env))()
-    for _, definition in ipairs(env.QBCoreSeed.items) do state.definitions[definition.name] = definition end
+    for _, definition in ipairs(env.KoraCoreSeed.items) do state.definitions[definition.name] = definition end
     assert(loadfile(resource .. '/shared/config.lua', 't', env))()
     for _, item in ipairs(env.Config.Locations.breakdown.items) do state.owned[item.item] = true end
     if edit then edit(env, state) end
@@ -49,17 +49,17 @@ local function menuItems(state)
     return state.app.navigation[1].content.blocks[1].items
 end
 local function selectItem(state, key, action)
-    return state.app.onAction(action or 'qbfishing:refine', { itemId = 'refine:' .. key })
+    return state.app.onAction(action or 'kora_fishing:refine', { itemId = 'refine:' .. key })
 end
 
 local state = setup()
-eq(state.app.id, 'qbfishing:breakdown', 'registered app id')
+eq(state.app.id, 'kora_fishing:breakdown', 'registered app id')
 eq(#menuItems(state), 16, 'all shipped salvage entries are present')
 eq(#state.targets, #state.env.Config.Locations.breakdown.locations, 'one existing target per configured location')
 state.targets[1].options[1].onSelect()
 eq(state.lastKey, 1, 'target selection requests existing server authorization')
-eq(state.opened[1], 'qbfishing:breakdown', 'authorized target opens existing app')
-eq(state.updates[1].id, 'qbfishing:breakdown', 'existing app update id')
+eq(state.opened[1], 'kora_fishing:breakdown', 'authorized target opens existing app')
+eq(state.updates[1].id, 'kora_fishing:breakdown', 'existing app update id')
 for key, item in ipairs(state.env.Config.Locations.breakdown.items) do
     local definition = state.definitions[item.item]
     eq(item.label, nil, 'stock config has no bespoke action label')
@@ -76,7 +76,7 @@ for key, item in ipairs(state.env.Config.Locations.breakdown.items) do
     eq(progress.anim.dict, 'mp_arresting', 'existing animation dict'); eq(progress.anim.clip, 'a_uncuff', 'existing animation clip')
     eq(progress.anim.flag, 17, 'existing animation flag')
     local event = state.events[#state.events]
-    eq(event.name, 'qbfishing:server:refineItem', 'existing event name')
+    eq(event.name, 'kora_fishing:server:refineItem', 'existing event name')
     eq(event.args[1], 1, 'selected location key'); eq(event.args[2], key, 'selected original item key'); eq(event.args.n, 2, 'existing event arity')
 end
 for _, result in ipairs({ false, 'nil' }) do
@@ -88,7 +88,7 @@ end
 state.result = true
 local before = #state.progress
 state.app.onAction('other', { itemId = 'refine:1' })
-for _, id in ipairs({ '', 'item:1', 'refine:x', 'refine:999' }) do state.app.onAction('qbfishing:refine', { itemId = id }) end
+for _, id in ipairs({ '', 'item:1', 'refine:x', 'refine:999' }) do state.app.onAction('kora_fishing:refine', { itemId = id }) end
 eq(#state.progress, before, 'unknown action/item controls do not start progress')
 state.allowed = false; before = #state.opened; state.targets[1].options[1].onSelect()
 eq(#state.opened, before, 'server denial does not open the app')

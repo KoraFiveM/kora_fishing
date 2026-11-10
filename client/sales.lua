@@ -4,8 +4,8 @@ local function hasItem(item)
     return ok and has == true
 end
 
-local appId = 'qbfishing:buyer'
-local sellAction = 'qbfishing:sell'
+local appId = 'kora_fishing:buyer'
+local sellAction = 'kora_fishing:sell'
 local currentBuyerKey = nil
 local function buildBuyerItems()
     local items = {}
@@ -60,12 +60,12 @@ Kora.nui.registerApp({
         if not itemKey or not amount or amount <= 0 then
             return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
         end
-        TriggerServerEvent('qbfishing:server:sellItem', currentBuyerKey, itemKey, amount)
+        TriggerServerEvent('kora_fishing:server:sellItem', currentBuyerKey, itemKey, amount)
     end,
 })
 
 local function openBuyerMenu(key)
-    local can = Kora.callback.trigger('qbfishing:server:canOpenBuyerMenu', key)
+    local can = Kora.callback.trigger('kora_fishing:server:canOpenBuyerMenu', key)
     if not can then return end
     local items = buildBuyerItems()
     if #items == 0 then

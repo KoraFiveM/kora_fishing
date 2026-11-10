@@ -69,7 +69,7 @@ for _, poleItem in ipairs(poles) do
     exports.kora_core:createUseable(poleItem, function(source)
         if isFishing[source] then
             stopFishing(source)
-            TriggerClientEvent('qbfishing:client:stopFishing', source)
+            TriggerClientEvent('kora_fishing:client:stopFishing', source)
             TriggerClientEvent('QBCore:Notify', source, 'You reel in your line.', 'success')
             return
         end
@@ -83,7 +83,7 @@ for _, poleItem in ipairs(poles) do
         if zone and zone.poles[poleItem] then
             startFishing(source, poleItem, zoneIndex)
             startCooldown(source)
-            TriggerClientEvent('qbfishing:client:goFish', source, poleItem)
+            TriggerClientEvent('kora_fishing:client:goFish', source, poleItem)
         else
             TriggerClientEvent('QBCore:Notify', source, 'You are not in a fishing zone.', 'error')
         end
@@ -136,7 +136,7 @@ local function timeByLevel(rod, bait, currentLevel)
     return math.floor(math.max(minTime, time))
 end
 
-Kora.callback.register('qbfishing:server:beginCatch', function(src)
+Kora.callback.register('kora_fishing:server:beginCatch', function(src)
     local fishing = isFishing[src]
     if not fishing then return false, 'You are not currently fishing.' end
     if fishing.pending then return false, 'A catch is already in progress.' end
@@ -157,7 +157,7 @@ Kora.callback.register('qbfishing:server:beginCatch', function(src)
     return { duration = duration, authorization = authorization }
 end, { rateLimit = { max = 2, window = 1000 } })
 
-RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, authorization)
+RegisterNetEvent('kora_fishing:server:catchFish', function(requestedZone, proof, authorization)
     local src = source
     local fishing = isFishing[src]
     local pending = fishing and fishing.pending
@@ -187,10 +187,10 @@ RegisterNetEvent('qbfishing:server:catchFish', function(requestedZone, proof, au
     end
 end)
 
-RegisterNetEvent('qbfishing:server:stopFishing', function()
+RegisterNetEvent('kora_fishing:server:stopFishing', function()
     local src = source
     stopFishing(src)
-    TriggerClientEvent('qbfishing:client:stopFishing', src)
+    TriggerClientEvent('kora_fishing:client:stopFishing', src)
 end)
 
 AddEventHandler('playerDropped', function()

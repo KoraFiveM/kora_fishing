@@ -1,4 +1,4 @@
-Kora.callback.register('qbfishing:client:confirmOpenShop', function(source, shopKey)
+Kora.callback.register('kora_fishing:client:confirmOpenShop', function(source, shopKey)
     local src = source
     assert(shopKey, 'Invalid shop key')
     assert(Config.Shop and Config.Shop.locations and Config.Shop.locations[shopKey], 'Shop does not exist')
@@ -6,7 +6,7 @@ Kora.callback.register('qbfishing:client:confirmOpenShop', function(source, shop
     return true
 end)
 
-RegisterNetEvent('qbfishing:server:purchaseItem', function(shopKey, itemKey, amount)
+RegisterNetEvent('kora_fishing:server:purchaseItem', function(shopKey, itemKey, amount)
     local src = source
     assert(shopKey, 'Invalid shop key')
     assert(itemKey, 'Invalid item key')
@@ -24,8 +24,8 @@ RegisterNetEvent('qbfishing:server:purchaseItem', function(shopKey, itemKey, amo
     assert(totalPrice > 0, 'Invalid total price')
     if not exports.kora_core:removeMoney(src, 'cash', totalPrice) then return end
     if exports.kora_inventory:addItem(src, item, amount) then return end
-    local refunded, refundError = exports.kora_core:addMoney(src, 'cash', totalPrice, 'qbfishing-purchase-refund', true)
+    local refunded, refundError = exports.kora_core:addMoney(src, 'cash', totalPrice, 'kora_fishing-purchase-refund', true)
     if not refunded then
-        print(('qbfishing: purchase refund failed for player %s: %s'):format(src, tostring(refundError)))
+        print(('kora_fishing: purchase refund failed for player %s: %s'):format(src, tostring(refundError)))
     end
 end)

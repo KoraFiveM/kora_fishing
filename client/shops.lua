@@ -1,5 +1,5 @@
-local appId = 'qbfishing:shop'
-local purchaseAction = 'qbfishing:purchase'
+local appId = 'kora_fishing:shop'
+local purchaseAction = 'kora_fishing:purchase'
 local currentShopKey = nil
 
 local function buildShopItems()
@@ -58,12 +58,12 @@ Kora.nui.registerApp({
         if not itemKey or not amount or amount <= 0 then
             return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
         end
-        TriggerServerEvent('qbfishing:server:purchaseItem', currentShopKey, itemKey, amount)
+        TriggerServerEvent('kora_fishing:server:purchaseItem', currentShopKey, itemKey, amount)
     end,
 })
 
 local function openShop(key)
-    local confirm = Kora.callback.trigger('qbfishing:client:confirmOpenShop', key)
+    local confirm = Kora.callback.trigger('kora_fishing:client:confirmOpenShop', key)
     if not confirm then return end
     currentShopKey = key
     Kora.nui.updateApp(appId, { navigation = buildNavigation() })

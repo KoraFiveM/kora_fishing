@@ -99,11 +99,11 @@ end
 
 local state = setup()
 state.useables.fishing_pole(1)
-local catch = state.events['qbfishing:server:catchFish']
+local catch = state.events['kora_fishing:server:catchFish']
 for _ = 1, 3 do catch(1) end
 assert(state.fish == 0 and state.xp == 0 and state.removed == 0, 'raw catch spam must not grant rewards or consume bait')
-local begin = assert(state.callbacks['qbfishing:server:beginCatch'])
-local quota = assert(state.callbackOptions['qbfishing:server:beginCatch']).rateLimit
+local begin = assert(state.callbacks['kora_fishing:server:beginCatch'])
+local quota = assert(state.callbackOptions['kora_fishing:server:beginCatch']).rateLimit
 assert(quota.max == 2 and quota.window == 1000, 'catch authorizations must have a bounded allocation rate')
 local begun = assert(begin(1))
 catch(1)
@@ -171,22 +171,22 @@ assert(state.items[1].worm == 9 and state.items[1].plug_bait == 10, 'keep the ex
 for _, clear in ipairs({ 'stop', 'disconnect', 'unload' }) do
     local s = setup()
     s.useables.fishing_pole(1)
-    local pending = assert(s.callbacks['qbfishing:server:beginCatch'](1))
+    local pending = assert(s.callbacks['kora_fishing:server:beginCatch'](1))
     local oldProof = proofFor(s, pending)
-    if clear == 'stop' then s.events['qbfishing:server:stopFishing']()
+    if clear == 'stop' then s.events['kora_fishing:server:stopFishing']()
     elseif clear == 'disconnect' then s.hooks.playerDropped()
     else s.hooks['QBCore:Server:OnPlayerUnload'](1) end
-    assert(s.callbacks['qbfishing:server:beginCatch'](1) == false)
+    assert(s.callbacks['kora_fishing:server:beginCatch'](1) == false)
     s.useables.fishing_pole(1)
     if clear == 'stop' then
-        assert(s.callbacks['qbfishing:server:beginCatch'](1) == false, 'ordinary stop preserves the existing start cooldown')
+        assert(s.callbacks['kora_fishing:server:beginCatch'](1) == false, 'ordinary stop preserves the existing start cooldown')
         advance(s, 2000)
         s.useables.fishing_pole(1)
     end
-    assert(s.callbacks['qbfishing:server:beginCatch'](1), 'disconnect and unload clear cooldown; normal stop waits for its timer')
-    s.events['qbfishing:server:stopFishing']()
+    assert(s.callbacks['kora_fishing:server:beginCatch'](1), 'disconnect and unload clear cooldown; normal stop waits for its timer')
+    s.events['kora_fishing:server:stopFishing']()
     advance(s, pending.duration)
-    s.events['qbfishing:server:catchFish'](1, oldProof, pending.authorization)
+    s.events['kora_fishing:server:catchFish'](1, oldProof, pending.authorization)
     assert(s.fish == 0 and s.removed == 0, 'lifecycle cleanup invalidates old catch authorization')
 end
 
@@ -202,7 +202,7 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
         Wait = coroutine.yield,
         Kora = {
             callback = { trigger = function(name)
-                assert(name == 'qbfishing:server:beginCatch')
+                assert(name == 'kora_fishing:server:beginCatch')
                 beginCount = beginCount + 1
                 local result = s.callbacks[name](1)
                 assert(type(result) == 'table', 'previous minigame completion must release its pending catch')
@@ -229,7 +229,7 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
     }, { __index = s.env })
     assert(loadfile(clientPath, 't', client))()
     zones[1].onEnter()
-    local thread = coroutine.create(function() clientEvents['qbfishing:client:goFish']('fishing_pole') end)
+    local thread = coroutine.create(function() clientEvents['kora_fishing:client:goFish']('fishing_pole') end)
     local ok, wait = coroutine.resume(thread)
     assert(ok and wait == 1000)
     if outcome == 'exit' then zones[1].onExit() end
@@ -238,8 +238,8 @@ for _, outcome in ipairs({ 'success', 'failed', 'cancelled', 'error', 'exit' }) 
         ok, wait = coroutine.resume(thread)
         assert(ok, wait)
     end
-    assert(requests[#requests].name == 'qbfishing:server:stopFishing')
-    assert(s.callbacks['qbfishing:server:beginCatch'](1) == false, 'client shutdown clears the server session')
+    assert(requests[#requests].name == 'kora_fishing:server:stopFishing')
+    assert(s.callbacks['kora_fishing:server:beginCatch'](1) == false, 'client shutdown clears the server session')
     if outcome == 'success' then
         assert(s.fish == 1 and requests[1].args[1] == 1 and type(requests[1].args[2]) == 'string')
     else
@@ -265,7 +265,7 @@ do
         funds = funds - amount
         return true
     end, addMoney = function(_, src, account, amount, reason, ignoreTax)
-        assert(src == env.source and account == 'cash' and reason == 'qbfishing-purchase-refund' and ignoreTax == true)
+        assert(src == env.source and account == 'cash' and reason == 'kora_fishing-purchase-refund' and ignoreTax == true)
         refunds[#refunds + 1] = amount
         if not refundOK then return refundOK, 'refund unavailable' end
         funds = funds + amount
@@ -285,7 +285,7 @@ do
         return { level = s.level }
     end
     assert(loadfile(shopsPath, 't', env))()
-    local purchase = s.events['qbfishing:server:purchaseItem']
+    local purchase = s.events['kora_fishing:server:purchaseItem']
     local function deny(shopKey, itemKey, amount, ...)
         local beforeFunds, beforeAttempts, beforeGrants = funds, attempts, #grants
         assert(not pcall(purchase, shopKey, itemKey, amount, ...), 'shop purchase must reject ineligible players')
@@ -293,11 +293,11 @@ do
             'shop denial must precede debit and inventory insertion')
     end
     s.positions[1] = vector(shop.x + 100, shop.y, shop.z)
-    assert(not pcall(s.callbacks['qbfishing:client:confirmOpenShop'], 1, 1))
+    assert(not pcall(s.callbacks['kora_fishing:client:confirmOpenShop'], 1, 1))
     deny(1, 1, 1)
     s.positions[1] = vector(shop.x, shop.y, shop.z)
     deny(1, 2, 1, 99)
-    assert(s.callbacks['qbfishing:client:confirmOpenShop'](1, 1))
+    assert(s.callbacks['kora_fishing:client:confirmOpenShop'](1, 1))
     s.positions[1] = vector(shop.x + 100, shop.y, shop.z)
     deny(1, 1, 1)
     s.positions[1] = vector(shop.x + 5, shop.y, shop.z)
@@ -370,4 +370,4 @@ do
     assert(funds == 400 and #refunds == 3 and #messages == 1
         and messages[1]:find('refund unavailable', 1, true), 'rejected refund must be reported')
 end
-print('qbfishing: catch authority, timing, proof binding, replay, inventory, client lifecycle and shop eligibility regression passed')
+print('kora_fishing: catch authority, timing, proof binding, replay, inventory, client lifecycle and shop eligibility regression passed')

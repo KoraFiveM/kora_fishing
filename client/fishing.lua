@@ -30,7 +30,7 @@ end
 
 local function fish()
     while isFishing and currentZone and currentRod do
-        local begun, reason = Kora.callback.trigger('qbfishing:server:beginCatch')
+        local begun, reason = Kora.callback.trigger('kora_fishing:server:beginCatch')
         if type(begun) ~= 'table' then
             Kora.notify.send({ title = 'qb-fishing', message = reason or 'Unable to start a catch.', type = 'error' })
             break
@@ -46,21 +46,21 @@ local function fish()
         if not isFishing or not currentZone or not currentRod then break end
         local played, result = pcall(Kora.minigames.play, 'fishing', nil, begun.authorization)
         local proof = played and type(result) == 'table' and result.success and result.proof or nil
-        TriggerServerEvent('qbfishing:server:catchFish', currentZone, proof, begun.authorization)
+        TriggerServerEvent('kora_fishing:server:catchFish', currentZone, proof, begun.authorization)
         if not played then
-            print(('qbfishing: fishing minigame failed: %s'):format(result))
+            print(('kora_fishing: fishing minigame failed: %s'):format(result))
             Kora.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
             break
         end
     end
 
-    if isFishing then TriggerServerEvent('qbfishing:server:stopFishing') end
+    if isFishing then TriggerServerEvent('kora_fishing:server:stopFishing') end
     isFishing = false
     currentRod = nil
     stopFishingAnim()
 end
 
-RegisterNetEvent('qbfishing:client:goFish', function(rod)
+RegisterNetEvent('kora_fishing:client:goFish', function(rod)
     if source ~= 65535 then return end
 
     if not currentZone then return end
@@ -79,7 +79,7 @@ RegisterNetEvent('qbfishing:client:goFish', function(rod)
     fish()
 end)
 
-RegisterNetEvent('qbfishing:client:stopFishing', function()
+RegisterNetEvent('kora_fishing:client:stopFishing', function()
     isFishing = false
     currentRod = nil
     stopFishingAnim()
@@ -121,7 +121,7 @@ for key, zoneData in ipairs(Config.zones) do
             if hasFishingPole(zoneData) then
                 Kora.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
             end
-            if isFishing then TriggerServerEvent('qbfishing:server:stopFishing') end
+            if isFishing then TriggerServerEvent('kora_fishing:server:stopFishing') end
             currentZone = nil
             isFishing = false
             currentRod = nil
