@@ -3,7 +3,7 @@ author "mustache_dom"
 description " by mustache dom"
 fx_version "cerulean"
 game "gta5"
-version  '1.0.0'
+version  '0.1.0'
 
 dependency {
 	'kora_core',
