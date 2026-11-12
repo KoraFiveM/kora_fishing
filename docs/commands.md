@@ -1,9 +1,37 @@
 ---
-title: Commands
+title: "Commands"
 sidebar_position: 4
 ---
 
+
 # Commands
+
+Kora Fishing adds one client-side command.
+
+## Built-in commands
+
+### `/fishcatalog`
+
+Opens the read-only Fishing Catalog NUI app, which lists every configured pole, its baits (grouped and sorted by required level) and the fish/items each bait can catch. Locked baits are shown with a destructive tone and an "unlocked at level N" note; unlocked ones are shown in green.
+
+| Field | Details |
+| --- | --- |
+| Context | In-game · client command |
+| Arguments | No arguments. |
+| Access | Any player. |
+
+**Example**
+
+```text
+/fishcatalog
+```
+
+**Result**
+
+Opens the catalog app (id `qb-fishing:catalog`). Automatically closes on `QBCore:Client:OnPlayerUnload`.
+
+## Catalog contents
+
 
 | Command | Who | Description |
 | --- | --- | --- |
