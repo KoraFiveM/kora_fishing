@@ -1,0 +1,52 @@
+{
+  "resource": "kora_fishing",
+  "standardsRevision": "2026-11-12.1",
+  "realms": {
+    "client": [
+      "client/blips.lua",
+      "client/breakdown.lua",
+      "client/client_catalog.lua",
+      "client/fishing.lua",
+      "client/functions.lua",
+      "client/sales.lua",
+      "client/shops.lua"
+    ],
+    "server": [
+      "server/breakdown.lua",
+      "server/sales.lua",
+      "server/server.lua",
+      "server/shops.lua"
+    ],
+    "shared": [
+      "shared/config.lua"
+    ],
+    "manifest": [
+      "fxmanifest.lua"
+    ],
+    "test": [
+      "tests/breakdown.lua",
+      "tests/catches.lua"
+    ]
+  },
+  "exclude": [
+    ".git/*",
+    ".github/*",
+    ".standards/*",
+    "node_modules/*",
+    "**/node_modules/*",
+    "vendor/*",
+    "**/vendor/*",
+    "web/*",
+    "ui/*",
+    "html/*",
+    "dist/*",
+    "artifacts/*",
+    "runtime/*",
+    "txData/*",
+    "storage/*",
+    "stream/*",
+    "docs/*",
+    "__pycache__/*",
+    "modules/lookup/data/*"
+  ]
+}
