@@ -1,6 +1,6 @@
 ---
 title: Items
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Items
@@ -18,6 +18,6 @@ The resource does not define items itself. They must exist in the `kora_core` sh
 
 Fish sell prices (cash): flounder, reddrum, tuna 15; steelhead, blue_fish, halibut 30; catfish, white_bass, salmon 50; trout, bass 60.
 
-Shop prices and level gates are in the `Config.Shop.items` table, see [Configuration](./configuration.md).
+Shop prices and level gates are in the `Config.Shop.items` table, see [Configuration](./api/configuration.md).
 
 Images for all items except the refine rewards are in `images/`.

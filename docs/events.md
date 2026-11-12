@@ -1,6 +1,6 @@
 ---
 title: Events
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Events
@@ -22,7 +22,7 @@ Server handlers use `assert` for validation, so invalid or out-of-range requests
 
 | Event | Arguments | Description |
 | --- | --- | --- |
-| `kora_fishing:server:catchFish` | zone index, minigame proof or `nil`, authorization | Completes the pending catch. `nil` proof cancels it. See [Fishing](./fishing.md) |
+| `kora_fishing:server:catchFish` | zone index, minigame proof or `nil`, authorization | Completes the pending catch. `nil` proof cancels it. See [How to use](./how-to-use.md) |
 | `kora_fishing:server:stopFishing` | none | Clears the player's fishing state and tells the client to stop |
 | `kora_fishing:server:sellItem` | buyer location key, buyer item index, amount | Sells to the buyer. Amount must be a positive integer |
 | `kora_fishing:server:purchaseItem` | shop location key, shop item index, amount | Buys from the shop. Amount must be a positive integer within the item's `amount` |
