@@ -56,8 +56,8 @@ local function buildBaitItems(poleName, poleData, level)
             id = poleName .. ':' .. baitName,
             label = baitItemData and baitItemData.label or baitName,
             description = unlocked
-                and (('Unlocked at level %d'):format(requiredLevel))
-                or (('Locked - requires level %d'):format(requiredLevel)),
+                and Kora.lang('Catalog.unlocked', requiredLevel)
+                or Kora.lang('Catalog.locked', requiredLevel),
             image = baitItemData and baitItemData.image or nil,
             tone = unlocked and 'success' or 'destructive',
             children = buildFishItems(baitData.catch, unlocked),
@@ -79,15 +79,15 @@ local function buildPoleView(poleName, poleData, level)
                 {
                     type = 'stats',
                     items = {
-                        { label = 'Your Level',  value = level,                     icon = 'Star' },
-                        { label = 'Max Level',   value = Config.fishing.maxLevel,   icon = 'Trophy' },
+                        { label = Kora.lang('Catalog.your_level'),  value = level,                     icon = 'Star' },
+                        { label = Kora.lang('Catalog.max_level'),   value = Config.fishing.maxLevel,   icon = 'Trophy' },
                     },
                 },
                 {
                     type = 'list',
                     id = 'baits',
                     layout = 'list',
-                    empty = 'No baits configured for this pole.',
+                    empty = Kora.lang('Catalog.no_baits'),
                     items = buildBaitItems(poleName, poleData, level),
                 },
             },
@@ -107,13 +107,13 @@ end
 
 Kora.nui.registerApp({
     id = appId,
-    title = 'Fishing Catalog',
-    description = 'Poles, baits, and fish unlocked at your current fishing level.',
+    title = Kora.lang('Catalog.title'),
+    description = Kora.lang('Catalog.description'),
     icon = 'Fish',
     layout = 'standard',
     width = 900,
     height = 640,
-    footer = 'Press Escape to close',
+    footer = Kora.lang('Catalog.close'),
     navigation = buildNavigation(),
 })
 

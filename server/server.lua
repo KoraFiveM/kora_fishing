@@ -70,12 +70,12 @@ for _, poleItem in ipairs(poles) do
         if isFishing[source] then
             stopFishing(source)
             TriggerClientEvent('kora_fishing:client:stopFishing', source)
-            TriggerClientEvent('QBCore:Notify', source, 'You reel in your line.', 'success')
+            TriggerClientEvent('QBCore:Notify', source, Kora.lang('Fishing.reel_in'), 'success')
             return
         end
 
         if cooldown[source] then
-            TriggerClientEvent('QBCore:Notify', source, 'You must wait before fishing again.', 'error')
+            TriggerClientEvent('QBCore:Notify', source, Kora.lang('Fishing.wait'), 'error')
             return
         end
 
@@ -85,7 +85,7 @@ for _, poleItem in ipairs(poles) do
             startCooldown(source)
             TriggerClientEvent('kora_fishing:client:goFish', source, poleItem)
         else
-            TriggerClientEvent('QBCore:Notify', source, 'You are not in a fishing zone.', 'error')
+            TriggerClientEvent('QBCore:Notify', source, Kora.lang('Fishing.zone_required'), 'error')
         end
     end)
 end
@@ -138,19 +138,19 @@ end
 
 Kora.callback.register('kora_fishing:server:beginCatch', function(src)
     local fishing = isFishing[src]
-    if not fishing then return false, 'You are not currently fishing.' end
-    if fishing.pending then return false, 'A catch is already in progress.' end
+    if not fishing then return false, Kora.lang('Fishing.not_fishing') end
+    if fishing.pending then return false, Kora.lang('Fishing.catch_in_progress') end
 
     local zone, zoneIndex = isInsideZone(src)
-    if not zone or zoneIndex ~= fishing.zone then return false, 'You have left the fishing zone.' end
+    if not zone or zoneIndex ~= fishing.zone then return false, Kora.lang('Fishing.left_fishing_zone') end
     if not zone.poles[fishing.rod] or not exports['qb-inventory']:HasItem(src, fishing.rod) then
-        return false, 'You do not have a usable fishing pole.'
+        return false, Kora.lang('Fishing.no_usable_pole')
     end
 
     local bait, level = getBait(src)
-    if not bait then return false, 'You have no usable bait for this pole.' end
+    if not bait then return false, Kora.lang('Fishing.no_bait') end
     local duration = timeByLevel(fishing.rod, bait, level)
-    if not duration then return false, 'You do not meet the level requirement for this bait.' end
+    if not duration then return false, Kora.lang('Fishing.bait_level') end
 
     local authorization = Kora.minigames.authorizeProof(src, 'fishing')
     fishing.pending = { bait = bait, authorization = authorization, readyAt = GetGameTimer() + duration }

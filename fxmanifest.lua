@@ -1,6 +1,6 @@
-name "mustache-"
-author "mustache_dom"
-description " by mustache dom"
+name "Kora Fishing"
+author "Kora"
+description " Fishing For The Kora Framework"
 fx_version "cerulean"
 game "gta5"
 version  '0.2.1'
@@ -8,8 +8,6 @@ version  '0.2.1'
 dependency {
 	'kora_core',
 	'kora_skills',
-	-- client/sales.lua and client/breakdown.lua call exports['qb-inventory']:HasItem at load;
-	-- kora_inventory registers that export, so it must start first.
 	'kora_inventory'
 }
 client_scripts {
@@ -31,3 +29,7 @@ lua54 'yes'
 
 -- kora_qa: Gherkin test scenarios (converted legacy tests), see [kora]/kora_qa/README.md
 qa_feature 'tests/*.feature'
+
+files {
+    'locales/*.lua'
+}

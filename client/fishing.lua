@@ -32,7 +32,7 @@ local function fish()
     while isFishing and currentZone and currentRod do
         local begun, reason = Kora.callback.trigger('kora_fishing:server:beginCatch')
         if type(begun) ~= 'table' then
-            Kora.notify.send({ title = 'qb-fishing', message = reason or 'Unable to start a catch.', type = 'error' })
+            Kora.notify.send({ title = Kora.lang('Fishing.title'), message = reason or Kora.lang('Fishing.unable_start'), type = 'error' })
             break
         end
 
@@ -49,7 +49,7 @@ local function fish()
         TriggerServerEvent('kora_fishing:server:catchFish', currentZone, proof, begun.authorization)
         if not played then
             print(('kora_fishing: fishing minigame failed: %s'):format(result))
-            Kora.notify.send({ title = 'qb-fishing', message = 'Unable to complete fishing. Please try again.', type = 'error' })
+            Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Fishing.unable_complete'), type = 'error' })
             break
         end
     end
@@ -66,12 +66,12 @@ RegisterNetEvent('kora_fishing:client:goFish', function(rod)
     if not currentZone then return end
 
     if not acceptablePole(currentZone, rod) then
-        Kora.notify.send({ title = 'qb-fishing', message = 'You cannot use that pole here', type = 'error' })
+        Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Fishing.wrong_pole_zone'), type = 'error' })
         return
     end
 
     if not exports['qb-inventory']:HasItem(rod) then
-        Kora.notify.send({ title = 'qb-fishing', message = 'You do not have that pole', type = 'error' })
+        Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Fishing.missing_pole'), type = 'error' })
         return
     end
     currentRod = rod
@@ -113,13 +113,13 @@ for key, zoneData in ipairs(Config.zones) do
         debug = false,
         onEnter = function()
             if hasFishingPole(zoneData) then
-                Kora.notify.send({ title = 'qb-fishing', message = 'You can use your fishing pole here', type = 'success' })
+                Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Fishing.can_fish_here'), type = 'success' })
             end
             currentZone = key
         end,
         onExit = function()
             if hasFishingPole(zoneData) then
-                Kora.notify.send({ title = 'qb-fishing', message = 'You have left the fishing zone', type = 'info' })
+                Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Fishing.left_zone'), type = 'info' })
             end
             if isFishing then TriggerServerEvent('kora_fishing:server:stopFishing') end
             currentZone = nil

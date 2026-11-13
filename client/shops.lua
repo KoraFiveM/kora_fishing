@@ -11,13 +11,13 @@ local function buildShopItems()
             items[#items + 1] = {
                 id = 'shop:' .. itemKey,
                 label = (itemInfo and itemInfo.label) or item.label or item.name,
-                description = 'In Stock: ' .. item.amount .. ' Price: ' .. item.price,
+                description = Kora.lang('Shop.stock_price', item.amount, item.price),
                 image = itemInfo and itemInfo.image or item.image,
                 action = {
                     id = purchaseAction,
-                    label = 'Buy',
+                    label = Kora.lang('Shop.buy'),
                     fields = {
-                        { id = 'amount', label = 'Amount', type = 'number', min = 1, required = true },
+                        { id = 'amount', label = Kora.lang('Shop.amount'), type = 'number', min = 1, required = true },
                     },
                 },
             }
@@ -29,12 +29,12 @@ end
 local function buildNavigation()
     return { {
         id = 'shop',
-        label = 'Fishing Shop',
+        label = Kora.lang('Shop.title'),
         icon = 'Fish',
         content = {
-            title = 'Fishing Shop',
+            title = Kora.lang('Shop.title'),
             blocks = {
-                { type = 'list', id = 'items', label = 'Available Items', empty = 'Nothing available at your current level.', items = buildShopItems() },
+                { type = 'list', id = 'items', label = Kora.lang('Shop.available_items'), empty = Kora.lang('Shop.empty'), items = buildShopItems() },
             },
         },
     } }
@@ -42,21 +42,21 @@ end
 
 Kora.nui.registerApp({
     id = appId,
-    title = 'Fishing Shop',
-    description = 'Buy poles, bait, and gear for fishing.',
+    title = Kora.lang('Shop.title'),
+    description = Kora.lang('Shop.description'),
     icon = 'Fish',
     layout = 'compact',
     width = 500,
     height = 560,
     placement = 'right',
-    footer = 'Press Escape to close',
+    footer = Kora.lang('Shop.close'),
     navigation = buildNavigation(),
     onAction = function(actionId, context)
         if actionId ~= purchaseAction then return end
         local itemKey = tonumber((context.itemId or ''):match('^shop:(%d+)$'))
         local amount = context.value and tonumber(context.value.amount)
         if not itemKey or not amount or amount <= 0 then
-            return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
+            return { notice = { tone = 'destructive', message = Kora.lang('Shop.invalid_amount') } }
         end
         TriggerServerEvent('kora_fishing:server:purchaseItem', currentShopKey, itemKey, amount)
     end,
@@ -77,7 +77,7 @@ for key, shopData in ipairs(Config.Shop.locations) do
     exports.kora_target:addEntity(ped, {
         {
             icon = 'fas fa-fish',
-            label = 'Open Fishing Shop',
+            label = Kora.lang('Shop.open'),
             onSelect = function() openShop(key) end,
         }
     })

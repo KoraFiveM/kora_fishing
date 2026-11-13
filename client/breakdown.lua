@@ -20,9 +20,9 @@ if Config.Locations and Config.Locations.breakdown then
                     items[#items + 1] = {
                         id = 'refine:' .. itemKey,
                         label = label,
-                        description = 'Refine: ' .. label,
+                        description = Kora.lang('Refine.item_description', label),
                         image = itemData and itemData.image or item.image,
-                        action = { id = refineAction, label = 'Refine' },
+                        action = { id = refineAction, label = Kora.lang('Refine.action') },
                     }
                 end
             end
@@ -32,10 +32,10 @@ if Config.Locations and Config.Locations.breakdown then
         local function buildNavigation()
             return { {
                 id = 'refine',
-                label = 'Refine Items',
+                label = Kora.lang('Refine.section'),
                 icon = 'Fish',
                 content = {
-                    title = 'Refine your catch',
+                    title = Kora.lang('Refine.refine_catch'),
                     blocks = { { type = 'list', id = 'items', items = buildRefineItems() } },
                 },
             } }
@@ -43,14 +43,14 @@ if Config.Locations and Config.Locations.breakdown then
 
         Kora.nui.registerApp({
             id = appId,
-            title = 'Refine Menu',
-            description = 'Break down salvage for crafting materials.',
+            title = Kora.lang('Refine.title'),
+            description = Kora.lang('Refine.description'),
             icon = 'Fish',
             layout = 'compact',
             width = 500,
             height = 560,
             placement = 'right',
-            footer = 'Press Escape to close',
+            footer = Kora.lang('Refine.close'),
             navigation = buildNavigation(),
             onAction = function(actionId, context)
                 if actionId ~= refineAction then return end
@@ -64,7 +64,7 @@ if Config.Locations and Config.Locations.breakdown then
                 local sharedItem = not item.label and itemData(item.item)
                 local label = item.label or (sharedItem and sharedItem.label) or item.item
                 local progress = Kora.progressbar.start({
-                    label = 'Refining ' .. label,
+                    label = Kora.lang('Refine.progress', label),
                     duration = 5000,
                     useWhileDead = false,
                     canCancel = true,
@@ -85,7 +85,7 @@ if Config.Locations and Config.Locations.breakdown then
 
             local items = buildRefineItems()
             if #items == 0 then
-                Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to refine.", type = "error" })
+                Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Refine.no_items'), type = "error" })
                 return
             end
 
@@ -102,7 +102,7 @@ if Config.Locations and Config.Locations.breakdown then
                 options = {
                     {
                         icon = 'fas fa-fish',
-                        label = 'Open Refine Menu',
+                        label = Kora.lang('Refine.open'),
                         onSelect = function() openRefineMenu(key) end,
                     }
                 }

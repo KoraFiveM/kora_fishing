@@ -15,13 +15,13 @@ local function buildBuyerItems()
             items[#items + 1] = {
                 id = 'buyer:' .. itemKey,
                 label = itemInfo and itemInfo.label or item.label,
-                description = 'Sell Price: ' .. item.price,
+                description = Kora.lang('Buyer.sell_price', item.price),
                 image = itemInfo and itemInfo.image or item.image,
                 action = {
                     id = sellAction,
-                    label = 'Sell',
+                    label = Kora.lang('Buyer.sell'),
                     fields = {
-                        { id = 'amount', label = 'Amount', type = 'number', min = 1, required = true },
+                        { id = 'amount', label = Kora.lang('Buyer.amount'), type = 'number', min = 1, required = true },
                     },
                 },
             }
@@ -33,10 +33,10 @@ end
 local function buildNavigation()
     return { {
         id = 'sell',
-        label = 'Sell Catch',
+        label = Kora.lang('Buyer.sell_catch'),
         icon = 'Fish',
         content = {
-            title = 'Sell your catch',
+            title = Kora.lang('Buyer.sell_your_catch'),
             blocks = { { type = 'list', id = 'items', items = buildBuyerItems() } },
         },
     } }
@@ -44,21 +44,21 @@ end
 
 Kora.nui.registerApp({
     id = appId,
-    title = 'Fish Buyer',
-    description = 'Sell fish and other catches for cash.',
+    title = Kora.lang('Buyer.title'),
+    description = Kora.lang('Buyer.description'),
     icon = 'Fish',
     layout = 'compact',
     width = 500,
     height = 560,
     placement = 'right',
-    footer = 'Press Escape to close',
+    footer = Kora.lang('Buyer.close'),
     navigation = buildNavigation(),
     onAction = function(actionId, context)
         if actionId ~= sellAction then return end
         local itemKey = tonumber((context.itemId or ''):match('^buyer:(%d+)$'))
         local amount = context.value and tonumber(context.value.amount)
         if not itemKey or not amount or amount <= 0 then
-            return { notice = { tone = 'destructive', message = 'Enter a valid amount.' } }
+            return { notice = { tone = 'destructive', message = Kora.lang('Buyer.invalid_amount') } }
         end
         TriggerServerEvent('kora_fishing:server:sellItem', currentBuyerKey, itemKey, amount)
     end,
@@ -69,7 +69,7 @@ local function openBuyerMenu(key)
     if not can then return end
     local items = buildBuyerItems()
     if #items == 0 then
-        Kora.notify.send({ title = "qb-fishing", message = "You do not have any items to sell.", type = "error" })
+        Kora.notify.send({ title = Kora.lang('Fishing.title'), message = Kora.lang('Buyer.no_items'), type = "error" })
         return
     end
     currentBuyerKey = key
@@ -84,7 +84,7 @@ for key, location in pairs(Config.Locations.buyer.locations) do
     exports.kora_target:addEntity(ped, {
         {
             icon = 'fas fa-fish',
-            label = 'Open Buyer Menu',
+            label = Kora.lang('Buyer.open'),
             onSelect = function() openBuyerMenu(key) end,
         }
     })
