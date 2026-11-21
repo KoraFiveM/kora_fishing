@@ -3,7 +3,7 @@ author "Kora"
 description " Fishing For The Kora Framework"
 fx_version "cerulean"
 game "gta5"
-version  '0.2.1'
+version  '0.2.2'
 
 dependency {
 	'kora_core',
