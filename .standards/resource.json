@@ -12,6 +12,7 @@
       "client/shops.lua"
     ],
     "server": [
+      "kora_versioncheck.lua",
       "server/breakdown.lua",
       "server/sales.lua",
       "server/server.lua",
