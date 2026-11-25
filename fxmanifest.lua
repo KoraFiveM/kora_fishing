@@ -3,6 +3,7 @@ author "Kora"
 description " Fishing For The Kora Framework"
 fx_version "cerulean"
 game "gta5"
+dependency 'kora_lib'
 version  '0.2.2'
 
 dependency {
@@ -33,3 +34,5 @@ qa_feature 'tests/*.feature'
 files {
     'locales/*.lua'
 }
+
+server_script 'kora_versioncheck.lua'
